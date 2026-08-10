@@ -5,6 +5,9 @@ import VueBind from './components/practice/basic/VueBind.vue'
 import VueBindclass from './components/practice/basic/VueBindClass.vue'
 import VueBindShorthand from './components/practice/basic/VueBindShorthand.vue'
 import VueBindStyle from './components/practice/basic/VueBindStyle.vue'
+import VueIf from './components/practice/basic/VueIf.vue'
+import VueShow from './components/practice/basic/VueShow.vue'
+import VueFor from './components/practice/basic/VueFor.vue'
 </script>
 
 <template>
@@ -15,5 +18,8 @@ import VueBindStyle from './components/practice/basic/VueBindStyle.vue'
     <VueBindclass />
     <VueBindShorthand />
     <VueBindStyle />
+    <VueIf />
+    <VueShow />
+    <VueFor />
   </div>
 </template>
