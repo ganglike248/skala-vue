@@ -8,6 +8,7 @@ import VueBindStyle from './components/practice/basic/VueBindStyle.vue'
 import VueIf from './components/practice/basic/VueIf.vue'
 import VueShow from './components/practice/basic/VueShow.vue'
 import VueFor from './components/practice/basic/VueFor.vue'
+import Exercise from './views/Exercise.vue'
 </script>
 
 <template>
@@ -21,5 +22,6 @@ import VueFor from './components/practice/basic/VueFor.vue'
     <VueIf />
     <VueShow />
     <VueFor />
+    <Exercise />
   </div>
 </template>
