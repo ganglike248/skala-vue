@@ -8,11 +8,15 @@ import VueBindStyle from './components/practice/basic/VueBindStyle.vue'
 import VueIf from './components/practice/basic/VueIf.vue'
 import VueShow from './components/practice/basic/VueShow.vue'
 import VueFor from './components/practice/basic/VueFor.vue'
-import Exercise from './views/Exercise.vue'
+import AppExercise from './views/AppExercise.vue'
+import ReactiveRef from './components/practice/composition/ReactiveRef.vue'
+import ReactiveReactive from './components/practice/composition/ReactiveReactive.vue'
+import ComputedBasic from './components/practice/composition/ComputedBasic.vue'
 </script>
 
 <template>
   <div style="padding: 20px">
+    <h1>day1</h1>
     <SampleOne />
     <SampleTwo />
     <VueBind />
@@ -22,6 +26,14 @@ import Exercise from './views/Exercise.vue'
     <VueIf />
     <VueShow />
     <VueFor />
-    <Exercise />
+    <h1>day2</h1>
+    <AppExercise />
+    <ReactiveRef />
+    <ReactiveReactive />
+    <ComputedBasic />
   </div>
 </template>
+
+<style>
+@import '@/assets/practice.css';
+</style>
