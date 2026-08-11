@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 
-// 습도(humidity), 미세먼지(dust) 필드 추가
+// 대전, 광주 + 습도(humidity), 미세먼지(dust) 필드 추가
 const weatherList = ref([
-  { id: 'city_01', name: '서울', temp: 28, status: '맑음', humidity: 55, dust: '보통' },
-  { id: 'city_02', name: '수원', temp: 24, status: '비', humidity: 80, dust: '좋음' },
+  { id: 'city_01', name: '서울', temp: 24, status: '맑음', humidity: 55, dust: '보통' },
+  { id: 'city_02', name: '수원', temp: 19, status: '비', humidity: 80, dust: '좋음' },
   { id: 'city_03', name: '부산', temp: 26, status: '구름', humidity: 62, dust: '좋음' },
   { id: 'city_04', name: '제주', temp: 22, status: '구름', humidity: 70, dust: '보통' },
   { id: 'city_05', name: '대전', temp: 30, status: '맑음', humidity: 45, dust: '나쁨' },
@@ -69,7 +69,8 @@ const handleSearchEnter = () => {
       <!-- 엔터 누르면 handleSearchEnter() 실행 -->
       <input
         type="text"
-        v-model.trim="searchQuery"
+        :value="searchQuery"
+        @input="(e) => (searchQuery = e.target.value)"
         @keyup.enter="handleSearchEnter"
         placeholder="검색할 도시 이름 입력 후 Enter"
       />
@@ -100,10 +101,10 @@ const handleSearchEnter = () => {
         <p>지역 코드: {{ item.id }}</p>
         <p>현재 기온: {{ item.temp }}°C</p>
 
-        <!-- 3항 연산자 이용 -->
-        <span class="badge" :class="item.temp >= 27 ? 'hot' : 'cool'">
-          {{ item.temp >= 27 ? '🔥 더움 (27도 이상)' : '❄️ 선선함 (27도 미만)' }}
-        </span>
+        <!-- 기온을 3단계로 분류 -->
+        <span v-if="item.temp >= 27" class="badge hot">🔥 더움 (27도 이상)</span>
+        <span v-else-if="item.temp >= 20" class="badge mild">🙂 적당함 (20~26도)</span>
+        <span v-else class="badge cool">🥶 추움 (20도 미만)</span>
 
         <!-- 클릭되어 상세정보가 펼쳐진(expandedId) 카드만 보이게 -->
         <div v-show="expandedId === item.id" class="extra-info">
@@ -142,6 +143,11 @@ const handleSearchEnter = () => {
 .badge.hot {
   background-color: #ffe0e0;
   color: red;
+}
+
+.badge.mild {
+  background-color: #fff3cd;
+  color: #8a6d00;
 }
 
 .badge.cool {
