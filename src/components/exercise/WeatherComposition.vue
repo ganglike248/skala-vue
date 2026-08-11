@@ -116,10 +116,6 @@ const handleSearchEnter = () => {
       </p>
     </section>
 
-    <div class="status-bar">
-      {{ selectedCityInfo }}
-    </div>
-
     <!-- computed / deep watch를 눈으로 확인할 수 있는 섹션 -->
     <section class="composition-monitor">
       <h3>🛰️ 반응형 상태 모니터링</h3>
@@ -130,38 +126,44 @@ const handleSearchEnter = () => {
       <p class="log-text">{{ tempChangeLog }}</p>
     </section>
 
+    <div class="status-bar">
+      {{ selectedCityInfo }}
+    </div>
+
     <section class="list-box">
       <h3>🏙️ 지역별 날씨 현황</h3>
 
       <!-- 검색 결과가 없을 때 -->
       <p v-if="filteredWeatherList.length === 0" class="empty-message">검색 결과가 없습니다.</p>
 
-      <!-- 검색 결과 필터링 -->
-      <div
-        v-for="item in filteredWeatherList"
-        :key="item.id"
-        class="weather-card"
-        :style="{ borderLeftColor: item.temp >= 27 ? '#e74c3c' : '#3498db' }"
-        @click="selectCity(item)"
-      >
-        <h4>{{ item.name }} {{ weatherEmojiMap[item.status] }}</h4>
-        <p>지역 코드: {{ item.id }}</p>
-        <p>현재 기온: {{ item.temp }}°C</p>
+      <!-- 검색 결과 필터링, 카드 2열 그리드 -->
+      <div class="card-grid">
+        <div
+          v-for="item in filteredWeatherList"
+          :key="item.id"
+          class="weather-card"
+          :style="{ borderLeftColor: item.temp >= 27 ? '#e74c3c' : '#3498db' }"
+          @click="selectCity(item)"
+        >
+          <h4>{{ item.name }} {{ weatherEmojiMap[item.status] }}</h4>
+          <p>지역 코드: {{ item.id }}</p>
+          <p>현재 기온: {{ item.temp }}°C</p>
 
-        <!-- 기온을 3단계로 분류 -->
-        <span v-if="item.temp >= 27" class="badge hot">🔥 더움 (27도 이상)</span>
-        <span v-else-if="item.temp >= 20" class="badge mild">🙂 적당함 (20~26도)</span>
-        <span v-else class="badge cool">🥶 추움 (20도 미만)</span>
+          <!-- 기온을 3단계로 분류 -->
+          <span v-if="item.temp >= 27" class="badge hot">🔥 더움 (27도 이상)</span>
+          <span v-else-if="item.temp >= 20" class="badge mild">🙂 적당함 (20~26도)</span>
+          <span v-else class="badge cool">🥶 추움 (20도 미만)</span>
 
-        <!-- 클릭되어 상세정보가 펼쳐진(expandedId) 카드만 보이게 -->
-        <div v-show="expandedId === item.id" class="extra-info">
-          <p>습도: {{ item.humidity }}%</p>
-          <p>미세먼지: {{ item.dust }}</p>
+          <!-- 클릭되어 상세정보가 펼쳐진(expandedId) 카드만 보이게 -->
+          <div v-show="expandedId === item.id" class="extra-info">
+            <p>습도: {{ item.humidity }}%</p>
+            <p>미세먼지: {{ item.dust }}</p>
+          </div>
+
+          <button class="btn-detail" @click.stop="showDetail(item.name, item.temp, item.status)">
+            상세보기
+          </button>
         </div>
-
-        <button class="btn-detail" @click.stop="showDetail(item.name, item.temp, item.status)">
-          상세보기
-        </button>
       </div>
     </section>
   </div>
@@ -169,7 +171,7 @@ const handleSearchEnter = () => {
 
 <style scoped>
 .dashboard-wrapper {
-  max-width: 720px;
+  max-width: 860px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -209,7 +211,6 @@ const handleSearchEnter = () => {
   margin-bottom: 20px;
   padding: 10px;
   text-align: center;
-  background-color: #f0f0f0;
   border-radius: 6px;
   font-weight: bold;
 }
@@ -244,18 +245,40 @@ const handleSearchEnter = () => {
   padding: 10px 0;
 }
 
+/* 카드를 2열로 배치 (좁은 화면에서는 1열로 자동 축소) */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 560px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .weather-card {
+  display: flex;
+  flex-direction: column;
   padding: 14px 16px;
-  margin-bottom: 10px;
+  background-color: #fff;
   border: 1px solid #eee;
   border-left: 4px solid #3498db;
   border-radius: 8px;
   cursor: pointer;
-  transition: box-shadow 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .weather-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.weather-card .badge {
+  align-self: flex-start;
 }
 
 .badge {
