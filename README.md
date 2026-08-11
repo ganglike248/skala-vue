@@ -6,6 +6,10 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
 ## WeatherMockup.vue 커스터마이징
 
+<img src="src/assets/snapShots/image1-1.png" alt="Mockup 실행 화면" width="400" />
+<img src="src/assets/snapShots/image1-2.png" alt="상세 정보" width="400" />
+<img src="src/assets/snapShots/image1-3.png" alt="alert" width="400" />
+
 - 데이터: 제주, 대전, 광주 데이터 추가 + humidity(습도), dust(미세먼지) 필드 추가
 - 검색: `:value` + `@input`으로 구현, `@keyup.enter`로 검색 결과 건수를 상태바에 표시
 - 카드 클릭: 상태바 갱신뿐 아니라 `expandedId`로 카드별 상세 패널 토글, 다시 클릭해 닫으면 상태바도 기본 문구로 복원
@@ -20,6 +24,11 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 - `<style scoped>`로 개별 스타일 적용
 
 ## WeatherComposition.vue 커스터마이징
+
+<img src="src/assets/snapShots/image2-1.png" alt="Mockup 실행 화면" width="400" />
+<img src="src/assets/snapShots/image2-2.png" alt="검색 필터링" width="400" />
+<img src="src/assets/snapShots/image2-3.png" alt="지역 선택" width="400" />
+<img src="src/assets/snapShots/image2-4.png" alt="deep watch로 내부 하나만 변경" width="400" />
 
 - Mockup에서 만든 기능에서 이어감
 - 데이터: Mockup과 동일
