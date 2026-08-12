@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-// 대전, 광주 + 습도(humidity), 미세먼지(dust) 필드 추가
+// 제주, 대전, 광주 + 습도(humidity), 미세먼지(dust) 필드 추가
 const weatherList = ref([
   { id: 'city_01', name: '서울', temp: 24, status: '맑음', humidity: 55, dust: '보통' },
   { id: 'city_02', name: '수원', temp: 19, status: '비', humidity: 80, dust: '좋음' },

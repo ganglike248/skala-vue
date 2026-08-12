@@ -168,3 +168,39 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 - reactive
   - 배열이나 객체 전체를 보면 이전 값 참조 불가
   - 특정 속성만 감시하면 이전 값 참조 가능 불가
+
+# day3
+
+## Component
+
+- 표준화된 소프트웨어 모듈(블록/부품)
+- 핵심: 독립성, 교체 가능성
+- 전역 등록
+  - main.js에서 app.component로 선언 하면 각 파일에서 import 없이 사용 가능
+- 내장 함수
+  - Lifecycle Hooks: setup(생성), onMounted(부착), onUpdated(갱신), onUnmounted(소멸)
+  - Component Composition: defineProps, defineEmits
+  - Dependency Injection: provide, inject
+
+### Lifecycle Hook
+
+- setup(): 생성 전(컴포넌트 불러온 후 화면 생성 전). 컴포넌트 생성 전 가장 먼저 실행. reactive 변수 및 함수 초기화
+- onMounted(): 마운트(화면 생성 완료) 완료 후 실행. DOM에 마운트된 후 호출. 초기 DOM 조작, API 호출 등에 사용
+- onUpdated(): 업데이트 후(데이터 변경된 시점). DOM 업데이트가 완료된 후 호출
+- onUnmounted(): 언마운트 완료(이 페이지를 떠날 때). 컴포넌트가 DOM에서 제거된 후 호출
+
+## Props & Emits
+
+- 데이터는 위에서 아래로(props), 신호는 아래에서 위로(Emits)
+  - Props는 자식에서 원본 데이터 수정 불가
+  - Emits를 이용해서 원본 데이터 수정해달라고 요청
+
+### defineProps()
+
+- 자식 컴포넌트에서 부모가 넘겨줄 데이터(속성)의 이름과 규격을 선언
+- Data는 camelCase로, 속성은 kebab-case로 작성
+
+### defineEmits()
+
+- 자식 컴포넌트에서 부모에게 이벤트 전달을 위한 매크로 함수
+- @이벤트타입 = "이벤트핸들러"로 수신
