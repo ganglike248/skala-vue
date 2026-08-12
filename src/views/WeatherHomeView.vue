@@ -1,12 +1,15 @@
 <script setup>
 import { ref, computed } from 'vue'
-import BaseDashboardCard from './BaseDashboardCard.vue'
-import TipBanner from './TipBanner.vue'
-import SearchBar from './SearchBar.vue'
-import WeatherCard from './WeatherCard.vue'
-import StatusBar from './StatusBar.vue'
+import { useRouter } from 'vue-router'
+import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
+import TipBanner from '@/components/exercise/TipBanner.vue'
+import SearchBar from '@/components/exercise/SearchBar.vue'
+import WeatherCard from '@/components/exercise/WeatherCard.vue'
+import StatusBar from '@/components/exercise/StatusBar.vue'
 
-// 제주, 대전, 광주 + 습도(humidity), 미세먼지(dust) 필드 추가
+const router = useRouter()
+
+// WeatherParent와 동일한 도시 데이터
 const weatherList = ref([
   { id: 'city_01', name: '서울', temp: 24, status: '맑음', humidity: 55, dust: '보통' },
   { id: 'city_02', name: '수원', temp: 19, status: '비', humidity: 80, dust: '좋음' },
@@ -20,7 +23,7 @@ const searchQuery = ref('')
 const defaultCityInfo = '카드를 클릭하거나 검색해 보세요.'
 const selectedCityInfo = ref(defaultCityInfo)
 
-// 상세정보 펼쳐짐 상태 (형제 컴포넌트끼리는 직접 통신 못 하므로 부모가 들고 있음)
+// 상세정보 펼쳐짐 상태
 const expandedId = ref(null)
 
 // 검색어에 따른 필터링된 리스트를 computed로 계산
@@ -29,11 +32,6 @@ const filteredWeatherList = computed(() => {
   if (!keyword) return weatherList.value
   return weatherList.value.filter((item) => item.name.includes(keyword))
 })
-
-// 알림 대행 함수 (window 객체 격리 우회)
-const showDetail = (item) => {
-  window.alert(`현재 ${item.name}의 날씨는 ${item.temp}°C이며 ${item.status} 상태입니다.`)
-}
 
 // 카드 클릭 시 하단 상태바 갱신 + 상세정보 패널 토글
 const selectCity = (item) => {
@@ -48,6 +46,11 @@ const handleSearchEnter = () => {
   selectedCityInfo.value = searchQuery.value
     ? `'${searchQuery.value}' 검색 결과: ${count}건`
     : '전체 도시가 표시 중입니다.'
+}
+
+// 상세보기 클릭 시 alert 대신 상세 페이지로 Programmatic Navigation
+const goToDetail = (item) => {
+  router.push('/weather/' + item.id)
 }
 </script>
 
@@ -79,7 +82,7 @@ const handleSearchEnter = () => {
           :city-item="item"
           :is-expanded="expandedId === item.id"
           @select-card="selectCity"
-          @click-detail="showDetail"
+          @click-detail="goToDetail"
         />
       </div>
     </BaseDashboardCard>

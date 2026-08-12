@@ -53,12 +53,7 @@ const badgeLabelMap = {
       <p>미세먼지: {{ cityItem.dust }}</p>
     </div>
 
-    <button
-      class="btn-detail"
-      @click.stop="emit('click-detail', cityItem.name, cityItem.temp, cityItem.status)"
-    >
-      상세보기
-    </button>
+    <button class="btn-detail" @click.stop="emit('click-detail', cityItem)">상세보기</button>
   </div>
 </template>
 

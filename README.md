@@ -6,15 +6,25 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
 ## 컴포넌트 분리 (WeatherParent 외 5개)
 
-Mockup에서 만든 기능을 그대로 유지하면서 6개 컴포넌트로 쪼갬
-
-- `WeatherParent.vue`: `weatherList`(도시 6개+humidity/dust), `searchQuery`, `selectedCityInfo`, `expandedId` 등 모든 반응형 상태와 `filteredWeatherList` computed, `selectCity`/`handleSearchEnter`/`showDetail` 로직을 전부 소유
+- Mockup에서 만든 기능을 그대로 유지하면서 6개 컴포넌트로 쪼갬
 - `BaseDashboardCard.vue`: 검색박스/리스트박스 공통 카드 스타일, `<slot>`으로 내용 주입
-- `TipBanner.vue`: 안내 배너. `showTip`은 부모가 몰라도 되는 상태라 컴포넌트 내부에 로컬로 캡슐화, props/emits 없이 완결
+- `TipBanner.vue`: 안내 배너. `showTip`은 부모가 몰라도 되는 상태라 컴포넌트 내부에 로컬로 캡슐화, props/emits 없이 작업
 - `SearchBar.vue`: `currentQuery`를 props로 받아 표시, 입력 시 `update-query` emit, Enter 입력 시 `search-enter` emit 추가
 - `WeatherCard.vue`: `cityItem`, `isExpanded`(부모의 `expandedId`와 비교한 값)를 props로 받음, 이모지/3단계 기온 뱃지/테두리 색/지역코드는 컴포넌트 내부에서 계산, 클릭 시 `select-card`, 상세보기 클릭 시 `click-detail` emit
 - `StatusBar.vue`: `message` props만 받아 표시하는 가장 단순한 컴포넌트
 - 형제 컴포넌트(SearchBar, WeatherCard)끼리는 직접 통신할 수 없어서 `expandedId`/`searchQuery` 같은 공유 상태는 전부 WeatherParent가 들고 있다가 props로 내려주고 emit으로 올려받는 구조로 설계
+
+## Vue Router 적용
+
+- `router/index.js`: 모든 라우트를 `() => import(...)`로 지연 로딩(lazy loading), 마지막에 `/:pathMatch(.*)*` Catch-all Route로 404 처리
+- `/` → `WeatherHomeView.vue`, `/about` → `WeatherAboutView.vue`, `/weather/:cityId` → `WeatherDetailView.vue`, `/stats` → `WeatherStatsView.vue`(추가 view), 나머지 전부 → `NotFoundView.vue`로 라우팅
+- `WeatherHomeView.vue`: 상세보기 클릭 시 `window.alert()` 대신 `router.push('/weather/'+id)`로 상세 페이지 이동
+- `WeatherCard.vue`의 `click-detail` emit을 `(name, temp, status)` 대신 `cityItem` 객체 전체로 통일(`select-card`와 동일 패턴) → 상세 페이지 이동에 필요한 `id`도 같이 전달
+- `WeatherDetailView.vue`: 도시 코드별 상세 Mock Data(지역명/기온/상태/습도/풍속)를 만들어두고, `useRoute().params.cityId`를 `onMounted` 시점에 조회해 표시
+- `WeatherAboutView.vue`: 서비스 소개 문구 + 대시보드로 돌아가기 버튼
+- `WeatherStatsView.vue`: 등록 도시 수/평균 기온/최고·최저 기온 도시를 computed로 계산해 보여주는 통계 페이지
+- `NotFoundView.vue`: 404 안내 문구 + 날씨 메인으로 이동 버튼
+- `App.vue`의 네비게이션 바에 "📊 날씨 통계" 링크 추가
 
 # day2 과제 정리
 
@@ -227,3 +237,99 @@ Mockup에서 만든 기능을 그대로 유지하면서 6개 컴포넌트로 쪼
 ## Component Slot
 
 - 자식 컴포넌트의 특정 구역을 비워두고, 동적으로 받아 렌더링 하는 기능
+
+## Router
+
+- 페이지 이동
+  - 전통 웹: 이동 시마다 화면 전체 새로고침
+  - Vue: 최초 한 번만 HTML 파일 하나만 다운(SAP 구조)
+
+### 설정하기
+
+- src/router/index.js
+- '/'를 사용해서 URL 관리
+  - path: URL 경로
+  - component: path에 매핑되는 vue 컴포넌트
+- export default router로 외부 공유
+- 실무에서는 동적 import 더 많이 사용(초기 로딩 속도 확보)
+
+### 등록하기
+
+- src/main.js
+- import router from './router'로 가져오기(알아서 index.js를 읽음)
+- app.use(router)로 라우터 등록
+
+### 사용하기
+
+- RouterLink to="..."으로 링크 생성
+- RouterView: Link와 일치하는 컴포넌트 배치
+
+### views 폴더
+
+- 페이지(화면) 단위의 최상위 컴포넌트
+- 구분
+  - views 폴더(큰 페이지 하나씩)
+    - 재사용성이 낮은 페이지(화면) 단위 컴포넌트
+    - RouterView에 직접 매핑(routes에 등록)
+    - URL Path와 1대1 대응
+    - RouterView에 의해 직접 호출되는 최상위 페이지 컴포넌트에는 접미사 'view' 붙이기
+  - component 폴더(페이지 안에 구성되는 요소들)
+    - 재사용성이 높은 UI/기능 컴포넌트
+    - RouterView에 직접 매핑 x
+
+## useRoute()
+
+- script setup 환경에서 현재 활성화된 라우트 정보에 접근하기 위한 Composable 함수
+- 프로퍼티
+  - params: 동적 경로 파라미터 객체 -> /user/:id => {id: '42'}
+  - query: URL 쿼리 스트링 객체 -> /search?q=vue => {q: 'vue'}
+  - path: 현재 요청된 URL의 순수 경로 -> /user/42
+  - name: 해당 라우트 설정에 지정된 고유 이름 -> UserDetail
+
+### 동적 경로 매칭
+
+- 주소창 뒤에 콜론(:)을 붙여 변수화(/weather/:cityId)함
+- 이 방식보다 쿼리 많이 씀
+
+### Query String Routing
+
+- 주소창 뒤에 물음표(?)에 이어 key=value 형태의 쌍으로 붙임
+  - /weather?search=수원&page=2
+
+## useRouter()
+
+- script setup 환경에서 라우터 인스턴스에 접근하기 위한 Composable 함수
+- 메소드
+  - push(): 스택에 추가(뒤로 가기 가능)
+  - replace(): 현재 히스토리 대체(뒤로 가기 불가)
+  - go(n): 스택에서 n단계만큼 이동, -1은 뒤로가기
+
+### Programmatic Navigation
+
+- script 내부에서 페이지를 전환
+- 메소드
+  - push()
+  - replace()
+  - go(n)
+  - back()
+  - forward()
+
+## Navigation Guard
+
+- 특정 라우트 진입 전, 접근 권한 검사 및 리다이렉션 실행하게 함
+  - 관리자 페이지나 마이 페이지를 비로그인 사용자 접근을 막음
+
+### Global Guard
+
+- 모든 Route 전환에서 사용자 정의 로직이 실행됨
+- beforeEach: 새로운 이동 시작되기 직전
+  - 접근 권한 통제 및 보안: 비로그인 사용자 차단
+- beforeResolve: 라우트 진입 전, 컴포넌트 분석 모두 완료된 직후 트리거
+  - 최종 데이터 검증 및 승인: 토큰, 데이터 확인
+- afterEach: 화면 전환이 끝난 후
+  - 후속 처리 및 로그 기록: 사용자 분석 로그 송신
+
+### Unmatched Route Handling
+
+- 라우트에 등록되지 않은 경로 예외 처리
+- path: '/:pathMatch(.\*)\*'로 선언

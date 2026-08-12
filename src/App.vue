@@ -1,12 +1,12 @@
 <script setup>
-import WeatherMockup from './components/exercise/WeatherMockup.vue'
-import WeatherComposition from './components/exercise/WeatherComposition.vue'
+// import WeatherMockup from './components/exercise/WeatherMockup.vue'
+// import WeatherComposition from './components/exercise/WeatherComposition.vue'
 import WeatherParent from './components/exercise/WeatherParent.vue'
 import UnitToggler from './components/exercise/UnitToggler.vue'
 </script>
 
 <template>
-  <div class="app-container">
+  <!-- <div class="app-container">
     <h1>⛅ 과제 1: 날씨 (Mockup)</h1>
     <hr />
     <WeatherMockup />
@@ -15,7 +15,7 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
     <h1>⛅ 과제 2: 날씨 (컴포지션)</h1>
     <hr />
     <WeatherComposition />
-  </div>
+  </div> -->
   <div class="app-container">
     <h1>⛅ 과제 3: 날씨 (컴포넌트)</h1>
     <hr />
@@ -29,6 +29,8 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
         <RouterLink to="/" class="nav-item">🌦️ 날씨 대시보드</RouterLink>
         <span class="divider">|</span>
         <RouterLink to="/about" class="nav-item">ℹ️ 서비스 소개</RouterLink>
+        <span class="divider">|</span>
+        <RouterLink to="/stats" class="nav-item">📊 날씨 통계</RouterLink>
       </nav>
       <main>
         <RouterView />
@@ -48,6 +50,8 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
         <RouterLink to="/" class="nav-item">🌦️ 날씨 대시보드</RouterLink>
         <span class="divider">|</span>
         <RouterLink to="/about" class="nav-item">ℹ️ 서비스 소개</RouterLink>
+        <span class="divider">|</span>
+        <RouterLink to="/stats" class="nav-item">📊 날씨 통계</RouterLink>
         <UnitToggler />
       </nav>
       <main>
