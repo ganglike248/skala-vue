@@ -2,9 +2,14 @@
 
 SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
+---
+
 # day3 과제 정리
 
 ## 컴포넌트 분리 (WeatherParent 외 5개)
+
+<img src="src/assets/snapShots/image3-1.png" alt="컴포넌트로 분리된 화면" width="400" /><br>
+컴포넌트로 분리된 화면
 
 - Mockup에서 만든 기능은 그대로 유지하면서 화면을 6개 컴포넌트로 분리
 - `WeatherParent.vue`: 도시 데이터, 검색어, 선택 상태 등 전체 데이터를 관리
@@ -15,6 +20,17 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 - `StatusBar.vue`: 상단 상태바 문구만 표시
 
 ## Vue Router 적용
+
+<img src="src/assets/snapShots/image4-1.png" alt="라우터가 적용된 화면" width="400" /><br>
+라우터가 적용된 화면
+<img src="src/assets/snapShots/image4-2.png" alt="서비스 소개 화면" width="400" /><br>
+서비스 소개 화면
+<img src="src/assets/snapShots/image4-3.png" alt="별도로 추가한 날씨 통계 화면" width="400" /><br>
+별도로 추가한 날씨 통계 화면
+<img src="src/assets/snapShots/image4-4.png" alt="특정 도시 상세 내용" width="400" /><br>
+특정 도시 상세 내용
+<img src="src/assets/snapShots/image4-5.png" alt="라우팅 되지 않은 NotFound 화면" width="400" /><br>
+라우팅 되지 않은 NotFound 화면
 
 - 모든 페이지를 지연 로딩(필요할 때만 불러오기)으로 설정하고, 정의되지 않은 경로는 전부 404 페이지로 연결
 - `/` 날씨 대시보드, `/about` 서비스 소개, `/weather/도시코드` 도시별 상세 페이지, `/stats` 날씨 통계(추가로 만든 페이지)
@@ -27,17 +43,33 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
 ## Pinia Store 적용
 
+<img src="src/assets/snapShots/image5-1.png" alt="섭씨를 화씨로 변경한 화면" width="400" /><br>
+섭씨를 화씨로 변경한 화면
+<img src="src/assets/snapShots/image5-2.png" alt="별도로 추가한 즐겨찾기 기능1" width="400" /><br>
+별도로 추가한 즐겨찾기 기능1
+<img src="src/assets/snapShots/image5-3.png" alt="별도로 추가한 즐겨찾기 기능2" width="400" /><br>
+별도로 추가한 즐겨찾기 기능2
+<img src="src/assets/snapShots/image5-4.png" alt="별도로 추가한 풍속 단위 변경1" width="400" /><br>
+별도로 추가한 풍속 단위 변경1
+<img src="src/assets/snapShots/image5-5.png" alt="별도로 추가한 풍속 단위 변경2" width="400" /><br>
+별도로 추가한 풍속 단위 변경2
+
 - 요구사항대로 `configStore.js`로 섭씨/화씨 단위를 전역 관리, 메인/상세 화면에 적용
 - `favoriteStore.js` — 즐겨찾는 도시를 저장/토글하는 스토어를 새로 만들고, 카드에 ⭐ 버튼과 "즐겨찾기만 보기" 체크박스로 활용
 - `configStore.js`에 `windSpeedUnit`/`windSpeedSymbol`/`toggleWindSpeedUnit` 추가 — 상세 페이지 풍속(m/s ↔ mph)을 기온과 별개로 토글
+
+---
 
 # day2 과제 정리
 
 ## WeatherMockup.vue 커스터마이징
 
-<img src="src/assets/snapShots/image1-1.png" alt="Mockup 실행 화면" width="400" />
-<img src="src/assets/snapShots/image1-2.png" alt="상세 정보" width="400" />
-<img src="src/assets/snapShots/image1-3.png" alt="alert" width="400" />
+<img src="src/assets/snapShots/image1-1.png" alt="Mockup 실행 화면" width="400" /><br>
+Mockup 실행 화면
+<img src="src/assets/snapShots/image1-2.png" alt="상세 정보" width="400" /><br>
+상세 정보
+<img src="src/assets/snapShots/image1-3.png" alt="alert" width="400" /><br>
+alert
 
 - 데이터: 제주, 대전, 광주 데이터 추가 + humidity(습도), dust(미세먼지) 필드 추가
 - 검색: `:value` + `@input`으로 구현, `@keyup.enter`로 검색 결과 건수를 상태바에 표시
@@ -54,10 +86,14 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
 ## WeatherComposition.vue 커스터마이징
 
-<img src="src/assets/snapShots/image2-1.png" alt="Mockup 실행 화면" width="400" />
-<img src="src/assets/snapShots/image2-2.png" alt="검색 필터링" width="400" />
-<img src="src/assets/snapShots/image2-3.png" alt="지역 선택" width="400" />
-<img src="src/assets/snapShots/image2-4.png" alt="deep watch로 내부 하나만 변경" width="400" />
+<img src="src/assets/snapShots/image2-1.png" alt="Mockup 실행 화면" width="400" /><br>
+Mockup 실행 화면
+<img src="src/assets/snapShots/image2-2.png" alt="검색 필터링" width="400" /><br>
+검색 필터링
+<img src="src/assets/snapShots/image2-3.png" alt="지역 선택" width="400" /><br>
+지역 선택
+<img src="src/assets/snapShots/image2-4.png" alt="deep watch로 내부 하나만 변경" width="400" /><br>
+deep watch로 내부 하나만 변경
 
 - Mockup에서 만든 기능에서 이어감
 - 데이터: Mockup과 동일
