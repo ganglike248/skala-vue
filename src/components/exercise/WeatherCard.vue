@@ -1,5 +1,7 @@
 <script setup>
 import { computed } from 'vue'
+import { useConfigStore } from '@/stores/configStore'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 
 // 상위로부터 전달받을 도시 데이터, 상세정보 펼침 여부
 const props = defineProps({
@@ -16,6 +18,9 @@ const props = defineProps({
 // 상위로 송신할 커스텀 이벤트 등록
 const emit = defineEmits(['select-card', 'click-detail'])
 
+const configStore = useConfigStore()
+const favoriteStore = useFavoriteStore()
+
 // 날씨 상태에 맞는 이모지
 const weatherEmojiMap = {
   맑음: '☀️',
@@ -23,7 +28,7 @@ const weatherEmojiMap = {
   구름: '☁️',
 }
 
-// 기온을 3단계로 분류 (뱃지 색상, 카드 테두리 색상에서 공통으로 재사용)
+// 기온을 3단계로 분류 (뱃지 색상, 카드 테두리 색상에서 공통으로 재사용) - 원본 섭씨 기준
 const tempLevel = computed(() => {
   if (props.cityItem.temp >= 27) return 'hot'
   if (props.cityItem.temp >= 20) return 'mild'
@@ -36,13 +41,32 @@ const badgeLabelMap = {
   mild: '🙂 적당함 (20~26도)',
   cool: '🥶 추움 (20도 미만)',
 }
+
+// 스토어의 단위 설정이 'fahrenheit'일 때만 화씨로 변환해서 표시
+const displayTemp = computed(() => {
+  const rawTemp = props.cityItem.temp
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((rawTemp * 9) / 5 + 32)
+  }
+  return rawTemp
+})
 </script>
 
 <template>
   <div class="weather-card" :class="tempLevel" @click="emit('select-card', cityItem)">
-    <h4>{{ cityItem.name }} {{ weatherEmojiMap[cityItem.status] }}</h4>
+    <div class="card-header">
+      <h4>{{ cityItem.name }} {{ weatherEmojiMap[cityItem.status] }}</h4>
+      <!-- 즐겨찾기 토글 (favoriteStore) -->
+      <button
+        class="btn-favorite"
+        :class="{ active: favoriteStore.isFavorite(cityItem.id) }"
+        @click.stop="favoriteStore.toggleFavorite(cityItem.id)"
+      >
+        {{ favoriteStore.isFavorite(cityItem.id) ? '⭐' : '☆' }}
+      </button>
+    </div>
     <p>지역 코드: {{ cityItem.id }}</p>
-    <p>현재 기온: {{ cityItem.temp }}°C</p>
+    <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
 
     <!-- 뱃지 색상도 위와 같은 tempLevel을 그대로 재사용 -->
     <span class="badge" :class="tempLevel">{{ badgeLabelMap[tempLevel] }}</span>
@@ -98,6 +122,26 @@ const badgeLabelMap = {
   border-left-color: var(--tier-cool-bg);
 }
 
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.btn-favorite {
+  border: none;
+  background: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-favorite.active {
+  filter: drop-shadow(0 0 1px #f5a623);
+}
+
 .weather-card .badge {
   align-self: flex-start;
 }
@@ -134,6 +178,8 @@ const badgeLabelMap = {
 }
 
 .btn-detail {
+  /* 전역 exercise.css의 .btn-detail{position:absolute}가 새로 준 ⭐ 버튼과 겹치지 않도록 무효화 */
+  position: static;
   display: block;
   margin-top: 10px;
   padding: 6px 12px;

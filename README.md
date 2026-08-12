@@ -6,25 +6,30 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
 ## 컴포넌트 분리 (WeatherParent 외 5개)
 
-- Mockup에서 만든 기능을 그대로 유지하면서 6개 컴포넌트로 쪼갬
-- `BaseDashboardCard.vue`: 검색박스/리스트박스 공통 카드 스타일, `<slot>`으로 내용 주입
-- `TipBanner.vue`: 안내 배너. `showTip`은 부모가 몰라도 되는 상태라 컴포넌트 내부에 로컬로 캡슐화, props/emits 없이 작업
-- `SearchBar.vue`: `currentQuery`를 props로 받아 표시, 입력 시 `update-query` emit, Enter 입력 시 `search-enter` emit 추가
-- `WeatherCard.vue`: `cityItem`, `isExpanded`(부모의 `expandedId`와 비교한 값)를 props로 받음, 이모지/3단계 기온 뱃지/테두리 색/지역코드는 컴포넌트 내부에서 계산, 클릭 시 `select-card`, 상세보기 클릭 시 `click-detail` emit
-- `StatusBar.vue`: `message` props만 받아 표시하는 가장 단순한 컴포넌트
-- 형제 컴포넌트(SearchBar, WeatherCard)끼리는 직접 통신할 수 없어서 `expandedId`/`searchQuery` 같은 공유 상태는 전부 WeatherParent가 들고 있다가 props로 내려주고 emit으로 올려받는 구조로 설계
+- Mockup에서 만든 기능은 그대로 유지하면서 화면을 6개 컴포넌트로 분리
+- `WeatherParent.vue`: 도시 데이터, 검색어, 선택 상태 등 전체 데이터를 관리
+- `BaseDashboardCard.vue`: 검색박스/리스트박스에 공통으로 쓰는 카드 스타일
+- `TipBanner.vue`: 안내 배너, 닫기 상태를 자체적으로 관리
+- `SearchBar.vue`: 도시 검색창, 입력하면 검색어를 부모에게 전달하고 Enter 치면 검색 완료 신호도 전달
+- `WeatherCard.vue`: 카드 한 장, 이모지·기온 뱃지·테두리 색·지역코드를 표시하고, 클릭하면 선택 신호를, 상세보기를 누르면 상세보기 신호를 부모에게 전달
+- `StatusBar.vue`: 상단 상태바 문구만 표시
 
 ## Vue Router 적용
 
-- `router/index.js`: 모든 라우트를 `() => import(...)`로 지연 로딩(lazy loading), 마지막에 `/:pathMatch(.*)*` Catch-all Route로 404 처리
-- `/` → `WeatherHomeView.vue`, `/about` → `WeatherAboutView.vue`, `/weather/:cityId` → `WeatherDetailView.vue`, `/stats` → `WeatherStatsView.vue`(추가 view), 나머지 전부 → `NotFoundView.vue`로 라우팅
-- `WeatherHomeView.vue`: 상세보기 클릭 시 `window.alert()` 대신 `router.push('/weather/'+id)`로 상세 페이지 이동
-- `WeatherCard.vue`의 `click-detail` emit을 `(name, temp, status)` 대신 `cityItem` 객체 전체로 통일(`select-card`와 동일 패턴) → 상세 페이지 이동에 필요한 `id`도 같이 전달
-- `WeatherDetailView.vue`: 도시 코드별 상세 Mock Data(지역명/기온/상태/습도/풍속)를 만들어두고, `useRoute().params.cityId`를 `onMounted` 시점에 조회해 표시
+- 모든 페이지를 지연 로딩(필요할 때만 불러오기)으로 설정하고, 정의되지 않은 경로는 전부 404 페이지로 연결
+- `/` 날씨 대시보드, `/about` 서비스 소개, `/weather/도시코드` 도시별 상세 페이지, `/stats` 날씨 통계(추가로 만든 페이지)
+- `WeatherHomeView.vue`: 상세보기를 누르면 알림창 대신 상세 페이지로 이동
+- `WeatherDetailView.vue`: 도시 코드로 데이터를 찾아 지역명/기온/상태/습도/풍속 표시
 - `WeatherAboutView.vue`: 서비스 소개 문구 + 대시보드로 돌아가기 버튼
-- `WeatherStatsView.vue`: 등록 도시 수/평균 기온/최고·최저 기온 도시를 computed로 계산해 보여주는 통계 페이지
-- `NotFoundView.vue`: 404 안내 문구 + 날씨 메인으로 이동 버튼
-- `App.vue`의 네비게이션 바에 "📊 날씨 통계" 링크 추가
+- `WeatherStatsView.vue`: 등록 도시 수, 평균 기온, 가장 덥고 추운 도시를 보여주는 통계 페이지
+- `NotFoundView.vue`: 잘못된 경로로 들어오면 안내 문구 + 날씨 메인으로 이동 버튼
+- 네비게이션 바에 "📊 날씨 통계" 링크 추가
+
+## Pinia Store 적용
+
+- 요구사항대로 `configStore.js`로 섭씨/화씨 단위를 전역 관리, 메인/상세 화면에 적용
+- `favoriteStore.js` — 즐겨찾는 도시를 저장/토글하는 스토어를 새로 만들고, 카드에 ⭐ 버튼과 "즐겨찾기만 보기" 체크박스로 활용
+- `configStore.js`에 `windSpeedUnit`/`windSpeedSymbol`/`toggleWindSpeedUnit` 추가 — 상세 페이지 풍속(m/s ↔ mph)을 기온과 별개로 토글
 
 # day2 과제 정리
 
@@ -333,3 +338,29 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
 - 라우트에 등록되지 않은 경로 예외 처리
 - path: '/:pathMatch(.\*)\*'로 선언
+
+## Pinia
+
+- 전역 데이터 저장소(Store)를 개설하여 반응형 데이터 관리
+- 소규모 상태나 간단한 데이터 전달은 provide/inject로 해결
+  - 테마, 언어, 특정 컴포넌트 영역 내부 전달용
+- 앱 전체에 복잡하게 얽히고 디버깅이 중요한 데이터는 Pinia(Store)로 관리
+  - 로그인 정보, 장바구니
+
+### Store
+
+- 여러 파일로 구성될 수 있으며, 일반적으로 의미가 있는 상태끼리 파일 하나로 작성
+  - authStore, uiStore, alertStore, commonStore 등
+- state: 반응형 데이터 변수
+  - 전역으로 공유할 상태 데이터 객체
+  - ref(), reactive()
+- getters: 읽기 전용 계산된 변수
+  - 원본 state를 기반으로 실시간 가공한다.
+  - computed()
+- actions: 상태 변경 및 통신 함수
+  - 1. state 값을 변경
+  - 1. 서버 비동기 API 통신(axios) 작업 수행
+  - function()
+  - 실무 권장 방식
+- 생성 시 식별자 이름은 'use+파일명+Store'로 작성
+- 구조분해할당 하면 반응형 꺠짐

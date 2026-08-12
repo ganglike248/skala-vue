@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import TipBanner from '@/components/exercise/TipBanner.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
@@ -8,6 +9,7 @@ import WeatherCard from '@/components/exercise/WeatherCard.vue'
 import StatusBar from '@/components/exercise/StatusBar.vue'
 
 const router = useRouter()
+const favoriteStore = useFavoriteStore()
 
 // WeatherParent와 동일한 도시 데이터
 const weatherList = ref([
@@ -26,11 +28,19 @@ const selectedCityInfo = ref(defaultCityInfo)
 // 상세정보 펼쳐짐 상태
 const expandedId = ref(null)
 
-// 검색어에 따른 필터링된 리스트를 computed로 계산
+// 즐겨찾기한 도시만 보기 (favoriteStore)
+const showFavoritesOnly = ref(false)
+
+// 검색어 + 즐겨찾기 여부에 따른 필터링된 리스트를 computed로 계산
 const filteredWeatherList = computed(() => {
   const keyword = searchQuery.value.trim()
-  if (!keyword) return weatherList.value
-  return weatherList.value.filter((item) => item.name.includes(keyword))
+  let list = keyword
+    ? weatherList.value.filter((item) => item.name.includes(keyword))
+    : weatherList.value
+  if (showFavoritesOnly.value) {
+    list = list.filter((item) => favoriteStore.isFavorite(item.id))
+  }
+  return list
 })
 
 // 카드 클릭 시 하단 상태바 갱신 + 상세정보 패널 토글
@@ -71,6 +81,12 @@ const goToDetail = (item) => {
     <BaseDashboardCard>
       <h3>🏙️ 지역별 날씨 현황</h3>
 
+      <!-- 즐겨찾기(favoriteStore)한 도시만 필터링 -->
+      <label class="favorite-filter">
+        <input style="width: 5%" type="checkbox" v-model="showFavoritesOnly" />
+        ⭐ 즐겨찾기만 보기 ({{ favoriteStore.favoriteCount }})
+      </label>
+
       <!-- 검색 결과가 없을 때 -->
       <p v-if="filteredWeatherList.length === 0" class="empty-message">검색 결과가 없습니다.</p>
 
@@ -100,6 +116,16 @@ const goToDetail = (item) => {
   text-align: center;
   color: #e74c3c;
   padding: 10px 0;
+}
+
+.favorite-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  justify-content: flex-end;
 }
 
 .card-grid {
