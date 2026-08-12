@@ -2,6 +2,20 @@
 
 SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
+# day3 과제 정리
+
+## 컴포넌트 분리 (WeatherParent 외 5개)
+
+Mockup에서 만든 기능을 그대로 유지하면서 6개 컴포넌트로 쪼갬
+
+- `WeatherParent.vue`: `weatherList`(도시 6개+humidity/dust), `searchQuery`, `selectedCityInfo`, `expandedId` 등 모든 반응형 상태와 `filteredWeatherList` computed, `selectCity`/`handleSearchEnter`/`showDetail` 로직을 전부 소유
+- `BaseDashboardCard.vue`: 검색박스/리스트박스 공통 카드 스타일, `<slot>`으로 내용 주입
+- `TipBanner.vue`: 안내 배너. `showTip`은 부모가 몰라도 되는 상태라 컴포넌트 내부에 로컬로 캡슐화, props/emits 없이 완결
+- `SearchBar.vue`: `currentQuery`를 props로 받아 표시, 입력 시 `update-query` emit, Enter 입력 시 `search-enter` emit 추가
+- `WeatherCard.vue`: `cityItem`, `isExpanded`(부모의 `expandedId`와 비교한 값)를 props로 받음, 이모지/3단계 기온 뱃지/테두리 색/지역코드는 컴포넌트 내부에서 계산, 클릭 시 `select-card`, 상세보기 클릭 시 `click-detail` emit
+- `StatusBar.vue`: `message` props만 받아 표시하는 가장 단순한 컴포넌트
+- 형제 컴포넌트(SearchBar, WeatherCard)끼리는 직접 통신할 수 없어서 `expandedId`/`searchQuery` 같은 공유 상태는 전부 WeatherParent가 들고 있다가 props로 내려주고 emit으로 올려받는 구조로 설계
+
 # day2 과제 정리
 
 ## WeatherMockup.vue 커스터마이징
@@ -204,3 +218,12 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
 - 자식 컴포넌트에서 부모에게 이벤트 전달을 위한 매크로 함수
 - @이벤트타입 = "이벤트핸들러"로 수신
+
+### provide & inject
+
+- props Drilling: props를 쓰지 않는 중간 컴포넌트는 전달자 역할을 해야함
+- inject: 중간 컴포넌트 건너뛰기
+
+## Component Slot
+
+- 자식 컴포넌트의 특정 구역을 비워두고, 동적으로 받아 렌더링 하는 기능
