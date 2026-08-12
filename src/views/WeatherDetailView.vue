@@ -74,7 +74,7 @@ const goHome = () => {
       해당 도시 코드({{ route.params.cityId }})를 찾을 수 없습니다.
     </p>
 
-    <button class="btn-back" @click="goHome">메인 대시보드로 돌아가기</button>
+    <button class="btn-back" @click="goHome">대시보드 홈으로 이동</button>
   </section>
 </template>
 
