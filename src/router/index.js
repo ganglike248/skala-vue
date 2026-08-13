@@ -7,6 +7,12 @@ const routes = [
     component: () => import('../views/WeatherHomeView.vue'),
   },
   {
+    // 6개 고정 도시 + 검색으로 추가한 도시를 둘러보는 화면
+    path: '/regions',
+    name: 'regions',
+    component: () => import('../views/WeatherRegionsView.vue'),
+  },
+  {
     path: '/about',
     name: 'about',
     component: () => import('../views/WeatherAboutView.vue'),
