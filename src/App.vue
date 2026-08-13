@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
   CalendarDays,
   MapPinned,
-  Star,
+  Building2,
   BarChart3,
   Info,
   Wind,
@@ -41,9 +41,13 @@ const route = useRoute()
 // 홈은 selectionStore가 가리키는 '현재 선택된 지역'(기본값 내 위치)을 그대로 반영
 const isHome = computed(() => route.path === '/')
 const homeCurrent = computed(() => weatherStore.entries[selectionStore.selectedCityId]?.current)
-const homeGradientClass = computed(() => (isHome.value ? resolveGradientClass(homeCurrent.value?.iconCode) : null))
+const homeGradientClass = computed(() =>
+  isHome.value ? resolveGradientClass(homeCurrent.value?.iconCode) : null,
+)
 const homeParticleType = computed(() =>
-  isHome.value ? resolveParticleType(homeCurrent.value?.iconCode, homeCurrent.value?.conditionMain) : null,
+  isHome.value
+    ? resolveParticleType(homeCurrent.value?.iconCode, homeCurrent.value?.conditionMain)
+    : null,
 )
 // 그라디언트 클래스에 대응하는 사진을 CSS 변수로 흘려보내 배경으로 사용 (파티클은 그 위에 그대로 유지)
 const homeBodyStyle = computed(() => {
@@ -101,14 +105,16 @@ onUnmounted(() => clearInterval(clockTimer))
 const dateLabel = computed(() =>
   now.value.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' }),
 )
-const timeLabel = computed(() => now.value.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }))
+const timeLabel = computed(() =>
+  now.value.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+)
 
 // '예보' 탭은 항상 현재 선택된 지역(selectionStore)의 예보로 이동
 const navItems = computed(() => [
   { to: '/', label: '홈', icon: LayoutDashboard },
   { to: `/weather/${selectionStore.selectedCityId}`, label: '예보', icon: CalendarDays },
+  { to: '/regions', label: '지역 목록', icon: Building2 },
   { to: '/map', label: '지도', icon: MapPinned },
-  { to: '/regions', label: '즐겨찾기', icon: Star },
   { to: '/stats', label: '통계', icon: BarChart3 },
   { to: '/about', label: '소개', icon: Info },
 ])
@@ -141,7 +147,9 @@ const navItems = computed(() => [
           :key="item.label"
           :to="item.to"
           class="nav-link"
-          :class="{ 'router-link-exact-active': item.label === '예보' && $route.path.startsWith('/weather') }"
+          :class="{
+            'router-link-exact-active': item.label === '예보' && $route.path.startsWith('/weather'),
+          }"
         >
           <component :is="item.icon" :size="19" :stroke-width="2" />
           <span>{{ item.label }}</span>
@@ -163,7 +171,11 @@ const navItems = computed(() => [
         </button>
         <div class="sidebar-toggles">
           <UnitToggler />
-          <button class="wind-unit-pill" @click="configStore.toggleWindSpeedUnit" title="풍속 단위 전환">
+          <button
+            class="wind-unit-pill"
+            @click="configStore.toggleWindSpeedUnit"
+            title="풍속 단위 전환"
+          >
             <Wind :size="14" />
             <span>{{ configStore.windSpeedSymbol }}</span>
           </button>
@@ -471,7 +483,11 @@ const navItems = computed(() => [
 .app-body-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, var(--overlay-top, rgba(6, 12, 24, 0.32)) 0%, var(--overlay-bottom, rgba(6, 12, 24, 0.5)) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--overlay-top, rgba(6, 12, 24, 0.32)) 0%,
+    var(--overlay-bottom, rgba(6, 12, 24, 0.5)) 100%
+  );
   z-index: -1;
   pointer-events: none;
 }
