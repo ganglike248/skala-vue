@@ -4,6 +4,54 @@ SK SKALA 4기 Vue 실습 코드 - U123 손경락
 
 ---
 
+# day4 최종 과제 정리
+
+## OpenWeatherAPI 연결
+
+<img src="src/assets/snapShots/image6-1.png" alt="API 연결 확인" width="400" /><br>
+<br>
+API 연결 확인<br>
+
+## 날씨 대시보드 사이트
+
+- 배포된 사이트 URL: <https://skala-vue-smoky.vercel.app/>
+
+<img src="src/assets/snapShots/image6-2.png" alt="홈화면1" width="400" /><br>
+홈화면1<br>
+<img src="src/assets/snapShots/image6-3.png" alt="홈화면2" width="400" /><br>
+홈화면2<br>
+<img src="src/assets/snapShots/image6-4.png" alt="홈화면3" width="400" /><br>
+홈화면3<br>
+<img src="src/assets/snapShots/image6-5.png" alt="홈화면4" width="400" /><br>
+홈화면4<br>
+<img src="src/assets/snapShots/image6-14.png" alt="섭씨 화씨 변경" width="400" /><br>
+섭씨 화씨 변경<br>
+<img src="src/assets/snapShots/image6-6.png" alt="예보 상세 화면(시간별 예보)" width="400" /><br>
+예보 상세 화면(시간별 예보)<br>
+<img src="src/assets/snapShots/image6-7.png" alt="예보 상세 화면(일별 예보)" width="400" /><br>
+예보 상세 화면(일별 예보)<br>
+<img src="src/assets/snapShots/image6-8.png" alt="지역 목록 화면" width="400" /><br>
+지역 목록 화면<br>
+<img src="src/assets/snapShots/image6-9.png" alt="지역 즐겨찾기 등록" width="400" /><br>
+지역 즐겨찾기 등록<br>
+<img src="src/assets/snapShots/image6-10.png" alt="지도 화면1" width="400" /><br>
+지도 화면1<br>
+<img src="src/assets/snapShots/image6-11.png" alt="지도 화면2" width="400" /><br>
+지도 화면2<br>
+<img src="src/assets/snapShots/image6-12.png" alt="날씨 통계 화면" width="400" /><br>
+날씨 통계 화면<br>
+<img src="src/assets/snapShots/image6-13.png" alt="사이트 정보 소개 화면" width="400" /><br>
+사이트 정보 소개 화면<br>
+
+- 배포된 사이트 URL: <https://skala-vue-smoky.vercel.app/>
+- 브라우저 Geolocation API로 내 위치를 자동 인식해 홈 화면에 실시간 날씨를 바로 표시, 위치 권한이 없으면 기본 지역으로 대체
+- 6개 주요 도시를 기본 제공하고, 검색으로 원하는 도시를 자유롭게 추가·삭제하고 즐겨찾기로 관리
+- 시간별(1시간 단위로 추정)·일별(5일) 예보를 `ApexCharts` 애니메이션 차트로 시각화
+- 대기질(미세먼지/초미세먼지/이산화질소), 일출·일몰, 체감 불쾌지수까지 한 화면에서 확인
+- `Leaflet` 지도 위에 핀을 찍어 여러 도시의 날씨를 한눈에 비교
+- 날씨 상태·시간대에 맞춰 배경 사진과 파티클(비/눈 등) 연출이 자동으로 전환
+- 기술 스택: Vue 3(Composition API) · Vite · Pinia · Vue Router · `axios` · OpenWeatherMap API(현재 날씨/5일 예보/대기질/지오코딩) · `ApexCharts` · `Leaflet` · `lucide-vue` 아이콘 · `VueUse`(geolocation, dark mode, storage) · 자체 CSS 디자인 시스템
+
 # day3 과제 정리
 
 ## 컴포넌트 분리 (WeatherParent 외 5개)
