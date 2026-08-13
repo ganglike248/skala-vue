@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useDark, useToggle, useGeolocation } from '@vueuse/core'
 import {
   CloudSun,
@@ -15,8 +16,10 @@ import {
   LocateFixed,
 } from '@lucide/vue'
 import UnitToggler from './components/exercise/UnitToggler.vue'
+import WeatherParticles from './components/weather/WeatherParticles.vue'
 import { useWeatherStore } from '@/stores/weatherStore'
 import { useConfigStore } from '@/stores/configStore'
+import { resolveGradientClass, resolveParticleType } from '@/utils/weatherIconMap'
 
 // 다크모드: html 태그에 .dark 클래스를 붙였다 뗐다 하며 weather-theme.css의 토큰을 스위칭
 const isDark = useDark()
@@ -24,6 +27,13 @@ const toggleDark = useToggle(isDark)
 
 const weatherStore = useWeatherStore()
 const configStore = useConfigStore()
+const route = useRoute()
+
+// ---- 홈 화면일 때 app-body 전체를 날씨 그라디언트 배경으로 사용 ----
+const isHome = computed(() => route.path === '/')
+const homeCurrent = computed(() => weatherStore.entries.me?.current)
+const homeGradientClass = computed(() => (isHome.value ? resolveGradientClass(homeCurrent.value?.iconCode) : null))
+const homeParticleType = computed(() => (isHome.value ? resolveParticleType(homeCurrent.value?.conditionMain) : null))
 
 // ---- 내 위치 부트스트랩: 앱 최상단에서 한 번만 실행해서
 //      어떤 화면(홈/예보/지도)에서 시작하든 entries.me 를 쓸 수 있게 함 ----
@@ -135,9 +145,12 @@ const navItems = [
       </div>
     </aside>
 
-    <div class="app-body">
+    <div class="app-body" :class="homeGradientClass">
+      <div v-if="homeGradientClass" class="app-body-glow" />
+      <WeatherParticles v-if="homeGradientClass" :type="homeParticleType" />
+
       <!-- 상단 바: 날짜/시간 + 풍속 단위 -->
-      <header class="top-bar">
+      <header class="top-bar" :class="{ 'on-gradient': homeGradientClass }">
         <div class="top-bar-date">
           <span class="date-text">{{ dateLabel }}</span>
           <span class="dot">·</span>
@@ -152,14 +165,14 @@ const navItems = [
       </header>
 
       <main class="app-main">
-        <RouterView v-slot="{ Component, route }">
+        <RouterView v-slot="{ Component, route: r }">
           <Transition name="page" mode="out-in">
-            <component :is="Component" :key="route.fullPath" />
+            <component :is="Component" :key="r.fullPath" />
           </Transition>
         </RouterView>
       </main>
 
-      <footer class="app-footer">
+      <footer class="app-footer" :class="{ 'on-gradient': homeGradientClass }">
         <span>날씨·대기질 데이터 제공: OpenWeatherMap</span>
         <span class="dot">·</span>
         <span>SK SKALA 4기 Vue 실습 — U123 손경락</span>
@@ -307,11 +320,39 @@ const navItems = [
 }
 
 /* ---------- 본문 영역 ---------- */
+/* 홈 화면일 때는 weather-gradient-* 클래스가 여기(app-body) 자체 배경이 되어
+   상단 바 아래부터 푸터까지 화면 전체가 날씨 색으로 물듦 */
 .app-body {
+  position: relative;
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.4s ease;
+}
+.app-body.weather-gradient-clear-day,
+.app-body.weather-gradient-clear-night,
+.app-body.weather-gradient-clouds,
+.app-body.weather-gradient-rain,
+.app-body.weather-gradient-thunder,
+.app-body.weather-gradient-snow,
+.app-body.weather-gradient-fog {
+  color: #fff;
+}
+.app-body-glow {
+  position: absolute;
+  top: -140px;
+  right: -60px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.45), transparent 70%);
+  animation: glow-pulse 5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+.app-body :deep(.particles-canvas) {
+  z-index: 0;
 }
 
 .top-bar {
@@ -324,6 +365,9 @@ const navItems = [
   padding: 18px clamp(20px, 3vw, 40px) 10px;
   background: linear-gradient(var(--color-bg) 70%, transparent);
 }
+.top-bar.on-gradient {
+  background: linear-gradient(rgba(0, 0, 0, 0.14) 0%, transparent 100%);
+}
 .top-bar-date {
   font-size: 0.85rem;
   font-weight: 600;
@@ -335,6 +379,10 @@ const navItems = [
 .top-bar-date .date-text {
   color: var(--color-text);
   font-weight: 700;
+}
+.top-bar.on-gradient .top-bar-date,
+.top-bar.on-gradient .top-bar-date .date-text {
+  color: #fff;
 }
 .top-bar .dot {
   opacity: 0.5;
@@ -356,13 +404,24 @@ const navItems = [
 .wind-unit-pill:hover {
   transform: translateY(-1px);
 }
+.top-bar.on-gradient .wind-unit-pill {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
 
 .app-main {
+  position: relative;
+  z-index: 1;
   flex: 1;
   padding-top: 6px;
 }
 
 .app-footer {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -371,6 +430,9 @@ const navItems = [
   color: var(--color-text-muted);
   flex-wrap: wrap;
   text-align: center;
+}
+.app-footer.on-gradient {
+  color: rgba(255, 255, 255, 0.85);
 }
 .dot {
   opacity: 0.5;

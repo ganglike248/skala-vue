@@ -6,14 +6,14 @@ import { useWeatherStore } from '@/stores/weatherStore'
 import { useConfigStore } from '@/stores/configStore'
 import { useFavoriteStore } from '@/stores/favoriteStore'
 import { celsiusToFahrenheit, msToMph, buildAdvice } from '@/utils/weatherMath'
-import { resolveGradientClass, resolveParticleType } from '@/utils/weatherIconMap'
 import WeatherIcon from '@/components/weather/WeatherIcon.vue'
-import WeatherParticles from '@/components/weather/WeatherParticles.vue'
 import DaylightBar from '@/components/weather/DaylightBar.vue'
 import AirQualityCard from '@/components/weather/AirQualityCard.vue'
 import DiscomfortCard from '@/components/weather/DiscomfortCard.vue'
 import AdviceChips from '@/components/weather/AdviceChips.vue'
 
+// 배경 그라디언트/파티클은 App.vue가 app-body 전체에 이미 깔아주므로
+// 이 화면은 그 위에 얹히는 콘텐츠(반투명 카드들)만 신경 쓰면 됨
 const router = useRouter()
 const weatherStore = useWeatherStore()
 const configStore = useConfigStore()
@@ -38,9 +38,6 @@ const displayWind = computed(() => {
   const w = me.value.current.windSpeed
   return configStore.windSpeedUnit === 'mph' ? msToMph(w) : w
 })
-
-const gradientClass = computed(() => resolveGradientClass(me.value?.current?.iconCode))
-const particleType = computed(() => resolveParticleType(me.value?.current?.conditionMain))
 
 const advice = computed(() => {
   if (!me.value?.current) return []
@@ -68,55 +65,47 @@ function goDetail(id) {
 
 <template>
   <div class="page home-page">
-    <div class="dash-top">
-      <!-- 히어로: 내 위치 기반 현재 날씨 -->
-      <section class="hero glass-card" :class="gradientClass">
-        <div class="hero-glow" />
-        <WeatherParticles :type="particleType" />
+    <div v-if="isLoading" class="hero-loading">
+      <div class="skeleton" style="height: 20px; width: 140px; margin-bottom: 18px; background: rgba(255, 255, 255, 0.25)" />
+      <div class="skeleton" style="height: 74px; width: 220px; margin-bottom: 14px; background: rgba(255, 255, 255, 0.25)" />
+      <div class="skeleton" style="height: 16px; width: 260px; background: rgba(255, 255, 255, 0.25)" />
+    </div>
 
-        <div v-if="isLoading" class="hero-loading">
-          <div class="skeleton" style="height: 20px; width: 140px; margin-bottom: 18px; background: rgba(255, 255, 255, 0.25)" />
-          <div class="skeleton" style="height: 74px; width: 220px; margin-bottom: 14px; background: rgba(255, 255, 255, 0.25)" />
-          <div class="skeleton" style="height: 16px; width: 260px; background: rgba(255, 255, 255, 0.25)" />
+    <template v-else>
+      <p v-if="isFallback" class="location-banner">
+        <AlertTriangle :size="14" />
+        위치 권한이 없어 기본 지역을 표시했어요. 브라우저 위치 권한을 허용하면 내 지역 날씨를 볼 수 있어요.
+      </p>
+
+      <div class="hero-top">
+        <span class="location">
+          <MapPin :size="16" />
+          {{ me.name }}
+          <small>{{ me.region }}</small>
+        </span>
+        <WeatherIcon :code="me.current.iconCode" :size="72" class="icon-float" />
+      </div>
+
+      <div class="hero-body">
+        <div class="hero-temp">{{ displayTemp }}<span class="unit">{{ configStore.unitSymbol }}</span></div>
+        <p class="hero-desc">{{ me.current.description }} · 체감 {{ displayFeelsLike }}{{ configStore.unitSymbol }}</p>
+
+        <div class="hero-stats">
+          <span><ThermometerSun :size="14" /> 최고 {{ me.current.tempMax }}° / 최저 {{ me.current.tempMin }}°</span>
+          <span><Droplets :size="14" /> 습도 {{ me.current.humidity }}%</span>
+          <span><Wind :size="14" /> 풍속 {{ displayWind }}{{ configStore.windSpeedSymbol }}</span>
         </div>
 
-        <template v-else>
-          <p v-if="isFallback" class="location-banner">
-            <AlertTriangle :size="14" />
-            위치 권한이 없어 기본 지역을 표시했어요. 브라우저 위치 권한을 허용하면 내 지역 날씨를 볼 수 있어요.
-          </p>
+        <AdviceChips :tips="advice" />
+      </div>
 
-          <div class="hero-top">
-            <span class="location">
-              <MapPin :size="16" />
-              {{ me.name }}
-              <small>{{ me.region }}</small>
-            </span>
-            <WeatherIcon :code="me.current.iconCode" :size="72" class="icon-float" />
-          </div>
-
-          <div class="hero-body">
-            <div class="hero-temp">{{ displayTemp }}<span class="unit">{{ configStore.unitSymbol }}</span></div>
-            <p class="hero-desc">{{ me.current.description }} · 체감 {{ displayFeelsLike }}{{ configStore.unitSymbol }}</p>
-
-            <div class="hero-stats">
-              <span><ThermometerSun :size="14" /> 최고 {{ me.current.tempMax }}° / 최저 {{ me.current.tempMin }}°</span>
-              <span><Droplets :size="14" /> 습도 {{ me.current.humidity }}%</span>
-              <span><Wind :size="14" /> 풍속 {{ displayWind }}{{ configStore.windSpeedSymbol }}</span>
-            </div>
-
-            <AdviceChips :tips="advice" />
-          </div>
-        </template>
-      </section>
-
-      <!-- 보조 위젯: 대기질/불쾌지수/일출일몰 -->
-      <aside v-if="me?.current" class="widget-rail">
+      <!-- 보조 위젯: 대기질/불쾌지수/일출일몰 (가로 배치) -->
+      <section v-if="me?.current" class="widget-rail">
         <AirQualityCard v-if="me.airQuality" :aqi="me.airQuality.aqi" :components="me.airQuality.components" />
         <DiscomfortCard :temp="me.current.temp" :humidity="me.current.humidity" />
         <DaylightBar :sunrise="me.current.sunrise" :sunset="me.current.sunset" />
-      </aside>
-    </div>
+      </section>
+    </template>
 
     <!-- 오늘 시간별 기온 -->
     <section v-if="hourly.length" class="hourly-section glass-card">
@@ -169,50 +158,20 @@ function goDetail(id) {
 </template>
 
 <style scoped>
+/* 배경은 App.vue의 app-body가 담당 (weather-gradient-*), 여기서는 그 위 콘텐츠만 배치 */
 .home-page {
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding-top: 6px;
+  gap: 24px;
+  padding-top: 22px;
+  padding-bottom: 8px;
 }
 
-.dash-top {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
-  gap: 22px;
-  align-items: stretch;
-}
-
-.hero {
-  position: relative;
-  overflow: hidden;
-  padding: 34px 36px 32px;
-  color: #fff;
-  min-height: 340px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.hero-glow {
-  position: absolute;
-  top: -120px;
-  right: -80px;
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
-  animation: glow-pulse 5s ease-in-out infinite;
-  pointer-events: none;
-}
 .hero-loading {
   padding: 20px 0;
-  position: relative;
-  z-index: 2;
 }
 
 .location-banner {
-  position: relative;
-  z-index: 2;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -220,12 +179,9 @@ function goDetail(id) {
   background: rgba(0, 0, 0, 0.22);
   padding: 8px 12px;
   border-radius: var(--radius-sm);
-  margin-bottom: 16px;
 }
 
 .hero-top {
-  position: relative;
-  z-index: 2;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -244,10 +200,6 @@ function goDetail(id) {
   font-size: 0.75rem;
 }
 
-.hero-body {
-  position: relative;
-  z-index: 2;
-}
 .hero-temp {
   font-size: 5.2rem;
   font-weight: 800;
@@ -281,13 +233,26 @@ function goDetail(id) {
   gap: 5px;
 }
 
+/* ---------- 보조 위젯: 가로 배치 + 반투명 글래스 ---------- */
 .widget-rail {
   display: flex;
-  flex-direction: column;
   gap: 16px;
 }
 .widget-rail > :deep(*) {
   flex: 1;
+}
+
+/* 이 화면의 카드들은 컬러 배경(app-body) 위에 놓이므로 반투명 유리 느낌으로 오버라이드 */
+.home-page :deep(.glass-card) {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: var(--color-text);
+}
+html.dark .home-page :deep(.glass-card) {
+  background: rgba(19, 27, 46, 0.55);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .hourly-section {
@@ -310,6 +275,7 @@ function goDetail(id) {
   border-radius: var(--radius-md);
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
+  color: var(--color-text);
 }
 .hour-pill.now {
   background: linear-gradient(160deg, var(--color-primary), var(--sky-3));
@@ -330,6 +296,9 @@ function goDetail(id) {
   opacity: 0.85;
 }
 
+.favorites-preview .section-title {
+  color: #fff;
+}
 .favorites-preview .preview-row {
   display: flex;
   gap: 12px;
@@ -342,7 +311,6 @@ function goDetail(id) {
   padding: 12px 18px;
   border: none;
   cursor: pointer;
-  color: var(--color-text);
   transition: transform 0.15s ease;
 }
 .preview-chip:hover {
@@ -364,7 +332,6 @@ function goDetail(id) {
   padding: 22px 26px;
   cursor: pointer;
   text-decoration: none;
-  color: var(--color-text);
   transition: transform 0.15s ease;
 }
 .regions-cta:hover {
@@ -378,19 +345,7 @@ function goDetail(id) {
   font-size: 0.8rem;
 }
 
-@media (max-width: 1100px) {
-  .dash-top {
-    grid-template-columns: 1fr;
-  }
-  .widget-rail {
-    flex-direction: row;
-  }
-  .widget-rail > :deep(*) {
-    flex: 1;
-  }
-}
-
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .widget-rail {
     flex-direction: column;
   }
