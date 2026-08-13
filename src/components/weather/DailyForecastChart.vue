@@ -4,16 +4,18 @@ import { useDark } from '@vueuse/core'
 import { useConfigStore } from '@/stores/configStore'
 import { celsiusToFahrenheit } from '@/utils/weatherMath'
 
-// 5일 최고/최저 기온 range 차트 - 최저~최고를 하나의 측정치(범위)로 보고
-// sequential 블루 1색만 사용 (min/max를 서로 다른 카테고리로 취급하지 않음)
+// 5일 최저~최고 기온을 '바닥에서부터의 막대'가 아니라 '두 선 사이를 채운 밴드'로 표현.
+// 막대 방식은 축 최솟값과 정확히 같은 날만 바닥에 닿고 나머지는 상대적으로 떠 보여서
+// 계속 '깨진 것 같다'는 오해를 샀기 때문에, 애초에 '바닥에 닿아야 한다'는 기준 자체가
+// 없는 밴드 차트로 바꿔서 그 오해를 원천적으로 없앰
 const props = defineProps({ daily: { type: Array, default: () => [] } })
 
 const isDark = useDark()
 const configStore = useConfigStore()
 const toDisplay = (temp) => (configStore.unit === 'fahrenheit' ? celsiusToFahrenheit(temp) : temp)
 
-const BAR_LIGHT = '#2a78d6'
-const BAR_DARK = '#3987e5'
+const LINE_LIGHT = '#2a78d6'
+const LINE_DARK = '#3987e5'
 const MUTED_LIGHT = '#5b6478'
 const MUTED_DARK = '#93a0bd'
 const GRID_LIGHT = '#e1e0d9'
@@ -34,41 +36,43 @@ const series = computed(() => [
   },
 ])
 
-// y축을 데이터 범위에 맞춰 직접 고정 - 자동 스케일링이 만드는 여백 때문에
-// 막대 아래쪽이 축에서 붕 떠 보이는 문제를 해결 (가장 추운 날의 막대는 바닥에 붙게)
+// 밴드가 축 위아래로 여유 있게 숨 쉬도록 데이터 범위보다 살짝 넉넉하게
 const yBounds = computed(() => {
   if (props.daily.length === 0) return { min: 0, max: 40 }
   const mins = props.daily.map((day) => toDisplay(day.min))
   const maxs = props.daily.map((day) => toDisplay(day.max))
-  return { min: Math.min(...mins), max: Math.max(...maxs) + 2 }
+  return { min: Math.min(...mins) - 2, max: Math.max(...maxs) + 2 }
 })
 
 const chartOptions = computed(() => {
   const dark = isDark.value
+  const line = dark ? LINE_DARK : LINE_LIGHT
   const muted = dark ? MUTED_DARK : MUTED_LIGHT
   return {
     chart: {
+      type: 'rangeArea',
       toolbar: { show: false },
       background: 'transparent',
       fontFamily: 'Pretendard, sans-serif',
       animations: { easing: 'easeinout', speed: 500 },
     },
     theme: { mode: dark ? 'dark' : 'light' },
-    colors: [dark ? BAR_DARK : BAR_LIGHT],
-    plotOptions: {
-      bar: { horizontal: false, columnWidth: '42%', borderRadius: 6, borderRadiusApplication: 'end' },
-    },
+    colors: [line],
+    fill: { opacity: 0.28 },
+    stroke: { curve: 'straight', width: 2 },
+    markers: { size: 4, strokeWidth: 2, strokeColors: dark ? '#131b2e' : '#ffffff', hover: { size: 6 } },
     dataLabels: {
       enabled: true,
       formatter: (val) => `${Math.round(val)}°`,
       style: { colors: [dark ? '#eef2fb' : '#10192b'], fontSize: '11px', fontWeight: 700 },
-      offsetY: -2,
+      offsetY: -6,
+      background: { enabled: false },
     },
     legend: { show: false },
     grid: {
       borderColor: dark ? GRID_DARK : GRID_LIGHT,
       xaxis: { lines: { show: false } },
-      padding: { left: 8, right: 8 },
+      padding: { left: 8, right: 8, top: 10 },
     },
     xaxis: {
       labels: { style: { colors: muted, fontSize: '11px' } },
@@ -78,7 +82,6 @@ const chartOptions = computed(() => {
     yaxis: {
       min: yBounds.value.min,
       max: yBounds.value.max,
-      forceNiceScale: false,
       labels: {
         formatter: (v) => `${Math.round(v)}°`,
         style: { colors: muted, fontSize: '11px' },
@@ -95,7 +98,7 @@ const chartOptions = computed(() => {
 <template>
   <div class="daily-chart">
     <p class="chart-caption text-muted">5일 예보 (최저 ~ 최고)</p>
-    <apexchart type="rangeBar" height="220" :options="chartOptions" :series="series" />
+    <apexchart type="rangeArea" height="220" :options="chartOptions" :series="series" />
   </div>
 </template>
 

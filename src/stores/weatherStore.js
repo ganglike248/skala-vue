@@ -20,7 +20,12 @@ export const CITY_META = [
 ]
 
 // geolocation 실패 시 홈 화면이 기본으로 보여줄 위치
-const FALLBACK_LOCATION = { name: '서울', region: '대한민국 서울특별시', lat: 37.5665, lon: 126.978 }
+const FALLBACK_LOCATION = {
+  name: '서울',
+  region: '대한민국 서울특별시',
+  lat: 37.5665,
+  lon: 126.978,
+}
 
 function buildCustomId(lat, lon) {
   return `custom_${Math.round(lat * 100)}_${Math.round(lon * 100)}`
@@ -162,9 +167,14 @@ export const useWeatherStore = defineStore('weather', () => {
     entry.error = null
     try {
       const response = await axios.get(`${BASE_WEATHER_URL}/weather`, {
-        params: { lat: entry.lat, lon: entry.lon, appid: OPENWEATHER_API_KEY, units: 'metric', lang: 'kr' },
+        params: {
+          lat: entry.lat,
+          lon: entry.lon,
+          appid: OPENWEATHER_API_KEY,
+          units: 'metric',
+          lang: 'kr',
+        },
       })
-      console.log(`✅ [${entry.name}] 현재 날씨 API 응답:`, response.data)
       entry.current = normalizeCurrent(response.data)
     } catch (err) {
       console.error(`날씨 조회 실패 (${entry.name}):`, err)
@@ -184,17 +194,20 @@ export const useWeatherStore = defineStore('weather', () => {
     entry.isLoadingDetail = true
     entry.error = null
     try {
-      const params = { lat: entry.lat, lon: entry.lon, appid: OPENWEATHER_API_KEY, units: 'metric', lang: 'kr' }
+      const params = {
+        lat: entry.lat,
+        lon: entry.lon,
+        appid: OPENWEATHER_API_KEY,
+        units: 'metric',
+        lang: 'kr',
+      }
       const [currentRes, forecastRes, airRes] = await Promise.all([
         axios.get(`${BASE_WEATHER_URL}/weather`, { params }),
         axios.get(`${BASE_WEATHER_URL}/forecast`, { params }),
-        axios.get(`${BASE_WEATHER_URL}/air_pollution`, { params: { lat: entry.lat, lon: entry.lon, appid: OPENWEATHER_API_KEY } }),
+        axios.get(`${BASE_WEATHER_URL}/air_pollution`, {
+          params: { lat: entry.lat, lon: entry.lon, appid: OPENWEATHER_API_KEY },
+        }),
       ])
-      console.log(`🌤️ [${entry.name}] 상세 데이터 API 응답:`, {
-        current: currentRes.data,
-        forecast: forecastRes.data,
-        air: airRes.data,
-      })
       entry.current = normalizeCurrent(currentRes.data)
       entry.forecast = normalizeForecast(forecastRes.data.list)
       entry.airQuality = normalizeAirQuality(airRes.data)
@@ -282,7 +295,12 @@ export const useWeatherStore = defineStore('weather', () => {
       const place = geoRes.data[0]
       resetMyLocationEntry(
         place
-          ? { name: place.local_names?.ko ?? place.name, region: [place.state, place.country].filter(Boolean).join(' '), lat, lon }
+          ? {
+              name: place.local_names?.ko ?? place.name,
+              region: [place.state, place.country].filter(Boolean).join(' '),
+              lat,
+              lon,
+            }
           : { name: '내 위치', region: '', lat, lon },
       )
       await fetchDetail('me')
@@ -308,7 +326,9 @@ export const useWeatherStore = defineStore('weather', () => {
 
   // getters
   const coreCities = computed(() => CITY_META.map((c) => entries[c.id]).filter(Boolean))
-  const customCityList = computed(() => customCities.value.map((c) => entries[c.id]).filter(Boolean))
+  const customCityList = computed(() =>
+    customCities.value.map((c) => entries[c.id]).filter(Boolean),
+  )
   const allCities = computed(() => [...coreCities.value, ...customCityList.value])
 
   // 통계 페이지 등에서 쓰기 좋은 평탄화 배열 (현재 날씨가 로드된 도시만)

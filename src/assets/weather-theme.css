@@ -85,8 +85,6 @@ body {
 
 /* ---------- 공용 레이아웃/카드 ---------- */
 .page {
-  max-width: 1360px;
-  margin: 0 auto;
   padding: 0 clamp(20px, 3vw, 40px) 64px;
 }
 

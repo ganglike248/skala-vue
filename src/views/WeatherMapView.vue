@@ -6,18 +6,20 @@ import 'leaflet/dist/leaflet.css'
 import { MapPinned, Droplets, Wind, Gauge, Eye, ChevronRight, LocateFixed } from '@lucide/vue'
 import { useWeatherStore, CITY_META } from '@/stores/weatherStore'
 import { useConfigStore } from '@/stores/configStore'
-import { celsiusToFahrenheit, msToMph } from '@/utils/weatherMath'
+import { useSelectionStore } from '@/stores/selectionStore'
+import { celsiusToFahrenheit, msToMph, formatHourLabel } from '@/utils/weatherMath'
 import WeatherIcon from '@/components/weather/WeatherIcon.vue'
 
 const router = useRouter()
 const weatherStore = useWeatherStore()
 const configStore = useConfigStore()
+const selectionStore = useSelectionStore()
 
 const mapEl = ref(null)
 let map = null
 const markers = new Map()
 
-// 지도 위에 표시할 대상: 내 위치 + 6개 주요 도시
+// 지도 위에 표시할 대상: 내 위치 + 6개 주요 도시 + 검색으로 추가한 도시(즐겨찾기 등)
 const mapTargets = computed(() => {
   const list = []
   if (weatherStore.entries.me) list.push(weatherStore.entries.me)
@@ -25,10 +27,15 @@ const mapTargets = computed(() => {
     const entry = weatherStore.entries[meta.id]
     if (entry) list.push(entry)
   })
+  list.push(...weatherStore.customCityList)
   return list
 })
 
-const selectedId = ref('city_01')
+// 홈/예보/즐겨찾기와 공유하는 선택 지역을 그대로 사용 (지도에서 고르면 다른 화면도 같이 바뀜)
+const selectedId = computed({
+  get: () => selectionStore.selectedCityId,
+  set: (id) => selectionStore.selectCity(id),
+})
 const selected = computed(() => weatherStore.entries[selectedId.value])
 
 function tempColor(t) {
@@ -107,8 +114,8 @@ const tempMeterPct = computed(() => {
   return Math.min(100, Math.max(0, ((t + 10) / 50) * 100))
 })
 
-const hourly = computed(() => selected.value?.forecast?.hourly ?? [])
-const formatHour = (ms, idx) => (idx === 0 ? '지금' : new Date(ms).toLocaleTimeString('ko-KR', { hour: 'numeric' }))
+const hourly = computed(() => (selected.value?.forecast?.hourly ?? []).slice(0, 10))
+const formatHour = (idx) => formatHourLabel(hourly.value, idx).hour
 
 function goDetail() {
   if (selected.value) router.push(`/weather/${selected.value.id}`)
@@ -137,6 +144,15 @@ function goDetail() {
         @click="selectCity(meta.id)"
       >
         {{ meta.name }}
+      </button>
+      <button
+        v-for="city in weatherStore.customCityList"
+        :key="city.id"
+        class="chip city-chip"
+        :class="{ active: selectedId === city.id }"
+        @click="selectCity(city.id)"
+      >
+        {{ city.name }}
       </button>
     </div>
 
@@ -194,7 +210,7 @@ function goDetail() {
 
           <div v-if="hourly.length" class="info-hourly hscroll">
             <div v-for="(h, idx) in hourly" :key="h.time" class="mini-hour">
-              <span>{{ formatHour(h.time, idx) }}</span>
+              <span>{{ formatHour(idx) }}</span>
               <WeatherIcon :code="h.iconCode" :size="20" />
               <strong>{{ displayTemp(h.temp) }}°</strong>
             </div>

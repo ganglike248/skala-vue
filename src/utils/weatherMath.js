@@ -121,17 +121,17 @@ export function friendlyDescription(id, fallback) {
   return DESCRIPTION_MAP[id] ?? fallback
 }
 
-// 시간별 예보 스트립의 라벨을 만듦: 첫 항목은 '지금', 그 외엔 'N시',
-// 자정을 넘어 날짜가 바뀌는 지점에는 'M/D N시'로 날짜를 함께 표시
+// 시간별 예보 스트립의 라벨을 만듦: 첫 항목은 '지금', 그 외엔 'N시'.
+// 자정을 넘어 날짜가 바뀌는 지점은 date 필드를 함께 채워서(줄바꿈용) 'M/D' + 'N시' 두 줄로 표시
 export function formatHourLabel(hourly, idx) {
-  if (idx === 0) return '지금'
+  if (idx === 0) return { date: null, hour: '지금' }
   const current = new Date(hourly[idx].time)
   const previous = new Date(hourly[idx - 1].time)
-  const hourLabel = current.toLocaleTimeString('ko-KR', { hour: 'numeric' })
+  const hour = current.toLocaleTimeString('ko-KR', { hour: 'numeric' })
   const crossedDay = current.toDateString() !== previous.toDateString()
-  if (!crossedDay) return hourLabel
-  const dateLabel = current.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })
-  return `${dateLabel} ${hourLabel}`
+  if (!crossedDay) return { date: null, hour }
+  const date = current.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })
+  return { date, hour }
 }
 
 // 섭씨 -> 화씨
