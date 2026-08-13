@@ -45,6 +45,10 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  // 페이지(라우트)를 이동할 때마다 스크롤 위치를 맨 위로 초기화
+  scrollBehavior() {
+    return { top: 0 }
+  },
 })
 
 export default router

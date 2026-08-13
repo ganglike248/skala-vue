@@ -238,10 +238,17 @@ export const useWeatherStore = defineStore('weather', () => {
     isSearching.value = true
     searchError.value = null
     try {
-      const response = await axios.get(`${BASE_GEO_URL}/direct`, {
-        params: { q: keyword, limit: 5, appid: OPENWEATHER_API_KEY },
-      })
-      searchResults.value = response.data.map(normalizeGeoResult)
+      let list = await geocode(keyword)
+      // OpenWeatherMap 지오코딩은 한글 도시명이 '시/군/구' 같은 행정구역 접미사가
+      // 붙어야만 매칭되는 경우가 있음(예: '속초'는 0건, '속초시'는 매칭됨).
+      // 순 한글 검색어인데 결과가 없으면 접미사를 붙여 자동으로 한 번 더 시도
+      if (list.length === 0 && /^[가-힣]+$/.test(keyword)) {
+        for (const suffix of ['시', '군', '구']) {
+          list = await geocode(keyword + suffix)
+          if (list.length > 0) break
+        }
+      }
+      searchResults.value = list.map(normalizeGeoResult)
     } catch (err) {
       console.error('도시 검색 실패:', err)
       searchError.value = '도시를 검색하지 못했습니다.'
@@ -249,6 +256,13 @@ export const useWeatherStore = defineStore('weather', () => {
     } finally {
       isSearching.value = false
     }
+  }
+
+  async function geocode(q) {
+    const response = await axios.get(`${BASE_GEO_URL}/direct`, {
+      params: { q, limit: 5, appid: OPENWEATHER_API_KEY },
+    })
+    return response.data
   }
 
   // 검색 결과를 '지역별 날씨' 목록에 커스텀 도시로 추가
