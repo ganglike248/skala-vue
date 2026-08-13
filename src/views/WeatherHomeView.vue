@@ -5,7 +5,7 @@ import { MapPin, ChevronRight, AlertTriangle, Droplets, Wind, ThermometerSun, St
 import { useWeatherStore } from '@/stores/weatherStore'
 import { useConfigStore } from '@/stores/configStore'
 import { useFavoriteStore } from '@/stores/favoriteStore'
-import { celsiusToFahrenheit, msToMph, buildAdvice } from '@/utils/weatherMath'
+import { celsiusToFahrenheit, msToMph, buildAdvice, formatHourLabel } from '@/utils/weatherMath'
 import WeatherIcon from '@/components/weather/WeatherIcon.vue'
 import DaylightBar from '@/components/weather/DaylightBar.vue'
 import AirQualityCard from '@/components/weather/AirQualityCard.vue'
@@ -51,7 +51,7 @@ const advice = computed(() => {
 
 const hourly = computed(() => me.value?.forecast?.hourly ?? [])
 const hourlyTemp = (t) => (configStore.unit === 'fahrenheit' ? celsiusToFahrenheit(t) : t)
-const formatHour = (ms, idx) => (idx === 0 ? '지금' : new Date(ms).toLocaleTimeString('ko-KR', { hour: 'numeric' }))
+const formatHour = (idx) => formatHourLabel(hourly.value, idx)
 
 // 즐겨찾기 미리보기 (현재 날씨가 이미 로드된 것만)
 const favoriteCities = computed(() =>
@@ -87,7 +87,7 @@ function goDetail(id) {
       </div>
 
       <div class="hero-body">
-        <div class="hero-temp">{{ displayTemp }}<span class="unit">{{ configStore.unitSymbol }}</span></div>
+        <div class="hero-temp temp-float">{{ displayTemp }}<span class="unit">{{ configStore.unitSymbol }}</span></div>
         <p class="hero-desc">{{ me.current.description }} · 체감 {{ displayFeelsLike }}{{ configStore.unitSymbol }}</p>
 
         <div class="hero-stats">
@@ -110,12 +110,13 @@ function goDetail(id) {
     <!-- 오늘 시간별 기온 -->
     <section v-if="hourly.length" class="hourly-section glass-card">
       <div class="section-title">오늘 시간별 기온</div>
+      <p class="hourly-caption text-muted">3시간 간격 예보를 기반으로 1시간 단위로 추정한 값이에요</p>
       <div class="hourly-row hscroll">
         <div v-for="(h, idx) in hourly" :key="h.time" class="hour-pill" :class="{ now: idx === 0 }">
-          <span class="hour-label">{{ formatHour(h.time, idx) }}</span>
+          <span class="hour-label">{{ formatHour(idx) }}</span>
           <WeatherIcon :code="h.iconCode" :size="26" />
           <strong class="hour-temp">{{ hourlyTemp(h.temp) }}°</strong>
-          <span v-if="h.pop > 0" class="hour-pop">💧{{ h.pop }}%</span>
+          <span class="hour-pop">💧{{ h.pop }}%</span>
         </div>
       </div>
     </section>
@@ -257,6 +258,11 @@ html.dark .home-page :deep(.glass-card) {
 
 .hourly-section {
   padding: 22px 26px 24px;
+}
+.hourly-caption {
+  font-size: 0.75rem;
+  margin-top: -8px;
+  margin-bottom: 12px;
 }
 .hourly-row {
   display: flex;

@@ -34,6 +34,15 @@ const series = computed(() => [
   },
 ])
 
+// y축을 데이터 범위에 맞춰 직접 고정 - 자동 스케일링이 만드는 여백 때문에
+// 막대 아래쪽이 축에서 붕 떠 보이는 문제를 해결 (가장 추운 날의 막대는 바닥에 붙게)
+const yBounds = computed(() => {
+  if (props.daily.length === 0) return { min: 0, max: 40 }
+  const mins = props.daily.map((day) => toDisplay(day.min))
+  const maxs = props.daily.map((day) => toDisplay(day.max))
+  return { min: Math.min(...mins), max: Math.max(...maxs) + 2 }
+})
+
 const chartOptions = computed(() => {
   const dark = isDark.value
   const muted = dark ? MUTED_DARK : MUTED_LIGHT
@@ -67,6 +76,9 @@ const chartOptions = computed(() => {
       axisTicks: { show: false },
     },
     yaxis: {
+      min: yBounds.value.min,
+      max: yBounds.value.max,
+      forceNiceScale: false,
       labels: {
         formatter: (v) => `${Math.round(v)}°`,
         style: { colors: muted, fontSize: '11px' },

@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, MapPin, Droplets, Wind, Gauge, Eye, ThermometerSun, CalendarDays } from '@lucide/vue'
 import { useWeatherStore } from '@/stores/weatherStore'
 import { useConfigStore } from '@/stores/configStore'
-import { celsiusToFahrenheit, msToMph } from '@/utils/weatherMath'
+import { celsiusToFahrenheit, msToMph, formatHourLabel } from '@/utils/weatherMath'
 import { resolveGradientClass, resolveParticleType } from '@/utils/weatherIconMap'
 import WeatherIcon from '@/components/weather/WeatherIcon.vue'
 import WeatherParticles from '@/components/weather/WeatherParticles.vue'
@@ -57,6 +57,7 @@ const toDisplay = (t) => (configStore.unit === 'fahrenheit' ? celsiusToFahrenhei
 
 const gradientClass = computed(() => resolveGradientClass(entry.value?.current?.iconCode))
 const particleType = computed(() => resolveParticleType(entry.value?.current?.conditionMain))
+const formatHour = (idx) => formatHourLabel(entry.value.forecast.hourly, idx)
 
 const todayKey = new Date().toISOString().slice(0, 10)
 function formatDay(dateStr) {
@@ -133,12 +134,13 @@ function goBack() {
 
           <div v-if="activeTab === 'hourly'" class="tab-panel">
             <HourlyForecastChart :hourly="entry.forecast.hourly" />
+            <p class="hourly-caption text-muted">3시간 간격 예보를 기반으로 1시간 단위로 추정한 값이에요</p>
             <div class="hourly-row hscroll">
               <div v-for="(h, idx) in entry.forecast.hourly" :key="h.time" class="hour-pill" :class="{ now: idx === 0 }">
-                <span class="hour-label">{{ idx === 0 ? '지금' : new Date(h.time).toLocaleTimeString('ko-KR', { hour: 'numeric' }) }}</span>
+                <span class="hour-label">{{ formatHour(idx) }}</span>
                 <WeatherIcon :code="h.iconCode" :size="24" />
                 <strong class="hour-temp">{{ toDisplay(h.temp) }}°</strong>
-                <span v-if="h.pop > 0" class="hour-pop">💧{{ h.pop }}%</span>
+                <span class="hour-pop">💧{{ h.pop }}%</span>
               </div>
             </div>
           </div>
@@ -159,7 +161,7 @@ function goBack() {
                 <WeatherIcon :code="day.iconCode" :size="26" />
                 <span class="day-desc">
                   {{ day.description }}
-                  <span v-if="day.pop > 0" class="pop-badge">💧{{ day.pop }}%</span>
+                  <span class="pop-badge">💧{{ day.pop }}%</span>
                 </span>
                 <span class="day-temps">
                   <strong>{{ toDisplay(day.max) }}°</strong>
@@ -277,6 +279,10 @@ function goBack() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+.hourly-caption {
+  font-size: 0.75rem;
+  margin-top: -8px;
 }
 
 .hourly-row {

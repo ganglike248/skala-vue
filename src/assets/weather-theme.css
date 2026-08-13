@@ -329,6 +329,22 @@ body {
   animation: icon-float 3.5s ease-in-out infinite;
 }
 
+/* 아이콘과 살짝 다른 리듬으로 흔들리는 큰 숫자용 둥실 애니메이션 (기온 숫자 등) */
+@keyframes temp-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.temp-float {
+  display: inline-block;
+  animation: temp-float 4.2s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
 @keyframes glow-pulse {
   0%,
   100% {

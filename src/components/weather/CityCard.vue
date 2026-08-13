@@ -35,10 +35,12 @@ function goDetail() {
     :initial="{ opacity: 0, y: 18 }"
     :enter="{ opacity: 1, y: 0, transition: { duration: 320 } }"
   >
-    <button v-if="removable" class="remove-btn" @click.stop="emit('remove', city.id)" aria-label="목록에서 제거">
-      <X :size="14" />
-    </button>
-    <FavoriteToggle class="fav-pos" :city-id="city.id" />
+    <div class="card-actions">
+      <button v-if="removable" class="remove-btn" @click.stop="emit('remove', city.id)" aria-label="목록에서 제거">
+        <X :size="14" />
+      </button>
+      <FavoriteToggle :city-id="city.id" />
+    </div>
 
     <template v-if="city.current">
       <WeatherIcon :code="city.current.iconCode" :size="42" class="icon-float" />
@@ -71,15 +73,15 @@ function goDetail() {
   transform: translateY(-4px);
   box-shadow: var(--shadow-strong);
 }
-.fav-pos {
+.card-actions {
   position: absolute;
   top: 10px;
   right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .remove-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

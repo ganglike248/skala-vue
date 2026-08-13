@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
 import axios from 'axios'
 import OPENWEATHER_API_KEY from '@/env.js'
+import { friendlyDescription } from '@/utils/weatherMath'
 
 const BASE_WEATHER_URL = 'https://api.openweathermap.org/data/2.5'
 const BASE_GEO_URL = 'https://api.openweathermap.org/geo/1.0'
@@ -39,22 +40,41 @@ function normalizeCurrent(data) {
     windDeg: data.wind.deg,
     iconCode: data.weather[0].icon,
     conditionMain: data.weather[0].main,
-    description: data.weather[0].description,
+    description: friendlyDescription(data.weather[0].id, data.weather[0].description),
     sunrise: data.sys.sunrise * 1000,
     sunset: data.sys.sunset * 1000,
     observedAt: data.dt * 1000,
   }
 }
 
-// 5일/3시간 예보 원본 -> 오늘 시간별 스트립 + 5일 요약으로 가공
+// 무료 5일/3시간 예보 API는 딱 3시간 간격 데이터만 줌(1시간 실측 데이터는 별도 유료 구독 필요).
+// 실제 3시간 지점(anchor) 사이 온도를 선형 보간해서 1시간 간격처럼 보이게 만듦.
+// 날씨 상태/강수확률처럼 보간이 의미 없는 값은 직전 실측 시각의 값을 그대로 이어받음(estimated=true로 표시).
+function buildHourlySeries(list, hoursAhead = 24) {
+  const anchors = list.slice(0, Math.ceil(hoursAhead / 3) + 1)
+  const hourly = []
+  for (let i = 0; i < anchors.length - 1 && hourly.length < hoursAhead; i++) {
+    const from = anchors[i]
+    const to = anchors[i + 1]
+    for (let step = 0; step < 3 && hourly.length < hoursAhead; step++) {
+      const frac = step / 3
+      const temp = from.main.temp + (to.main.temp - from.main.temp) * frac
+      hourly.push({
+        time: from.dt * 1000 + step * 3600 * 1000,
+        temp: Math.round(temp),
+        iconCode: from.weather[0].icon,
+        description: friendlyDescription(from.weather[0].id, from.weather[0].description),
+        pop: Math.round((from.pop ?? 0) * 100),
+        estimated: step !== 0,
+      })
+    }
+  }
+  return hourly
+}
+
+// 5일/3시간 예보 원본 -> 오늘 시간별 스트립(1시간 간격 보간) + 5일 요약으로 가공
 function normalizeForecast(list) {
-  const hourly = list.slice(0, 8).map((item) => ({
-    time: item.dt * 1000,
-    temp: Math.round(item.main.temp),
-    iconCode: item.weather[0].icon,
-    description: item.weather[0].description,
-    pop: Math.round((item.pop ?? 0) * 100),
-  }))
+  const hourly = buildHourlySeries(list)
 
   const byDate = new Map()
   list.forEach((item) => {
@@ -75,7 +95,7 @@ function normalizeForecast(list) {
         min: Math.round(Math.min(...temps)),
         max: Math.round(Math.max(...temps)),
         iconCode: noonItem.weather[0].icon,
-        description: noonItem.weather[0].description,
+        description: friendlyDescription(noonItem.weather[0].id, noonItem.weather[0].description),
         pop: Math.round(Math.max(...pops) * 100),
       }
     })

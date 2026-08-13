@@ -20,6 +20,24 @@ import WeatherParticles from './components/weather/WeatherParticles.vue'
 import { useWeatherStore } from '@/stores/weatherStore'
 import { useConfigStore } from '@/stores/configStore'
 import { resolveGradientClass, resolveParticleType } from '@/utils/weatherIconMap'
+import photoClearDay from '@/assets/hero-photos/clear-day.jpg'
+import photoClearNight from '@/assets/hero-photos/clear-night.jpg'
+import photoClouds from '@/assets/hero-photos/clouds.jpg'
+import photoRain from '@/assets/hero-photos/rain.jpg'
+import photoThunder from '@/assets/hero-photos/thunder.jpg'
+import photoSnow from '@/assets/hero-photos/snow.jpg'
+import photoFog from '@/assets/hero-photos/fog.jpg'
+
+// 날씨 조건별 무료 라이선스 사진 (Pexels, 출처 표기 불필요 라이선스) - 홈 배경용
+const HERO_PHOTOS = {
+  'weather-gradient-clear-day': photoClearDay,
+  'weather-gradient-clear-night': photoClearNight,
+  'weather-gradient-clouds': photoClouds,
+  'weather-gradient-rain': photoRain,
+  'weather-gradient-thunder': photoThunder,
+  'weather-gradient-snow': photoSnow,
+  'weather-gradient-fog': photoFog,
+}
 
 // 다크모드: html 태그에 .dark 클래스를 붙였다 뗐다 하며 weather-theme.css의 토큰을 스위칭
 const isDark = useDark()
@@ -34,6 +52,11 @@ const isHome = computed(() => route.path === '/')
 const homeCurrent = computed(() => weatherStore.entries.me?.current)
 const homeGradientClass = computed(() => (isHome.value ? resolveGradientClass(homeCurrent.value?.iconCode) : null))
 const homeParticleType = computed(() => (isHome.value ? resolveParticleType(homeCurrent.value?.conditionMain) : null))
+// 그라디언트 클래스에 대응하는 사진을 CSS 변수로 흘려보내 배경으로 사용 (파티클은 그 위에 그대로 유지)
+const homeBodyStyle = computed(() => {
+  const photo = homeGradientClass.value ? HERO_PHOTOS[homeGradientClass.value] : null
+  return photo ? { '--hero-photo': `url(${photo})` } : {}
+})
 
 // ---- 내 위치 부트스트랩: 앱 최상단에서 한 번만 실행해서
 //      어떤 화면(홈/예보/지도)에서 시작하든 entries.me 를 쓸 수 있게 함 ----
@@ -145,7 +168,7 @@ const navItems = [
       </div>
     </aside>
 
-    <div class="app-body" :class="homeGradientClass">
+    <div class="app-body" :class="homeGradientClass" :style="homeBodyStyle">
       <div v-if="homeGradientClass" class="app-body-glow" />
       <WeatherParticles v-if="homeGradientClass" :type="homeParticleType" />
 
@@ -330,6 +353,8 @@ const navItems = [
   flex-direction: column;
   transition: background-color 0.4s ease;
 }
+/* 날씨별 CSS 그라디언트 대신, App.vue가 골라준 실제 사진(--hero-photo)을 배경으로 사용.
+   사진 위에 어두운 그라디언트를 얹어 흰 글자/카드 대비를 확보 */
 .app-body.weather-gradient-clear-day,
 .app-body.weather-gradient-clear-night,
 .app-body.weather-gradient-clouds,
@@ -338,6 +363,12 @@ const navItems = [
 .app-body.weather-gradient-snow,
 .app-body.weather-gradient-fog {
   color: #fff;
+  background-image:
+    linear-gradient(180deg, rgba(6, 12, 24, 0.4) 0%, rgba(6, 12, 24, 0.58) 100%),
+    var(--hero-photo, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .app-body-glow {
   position: absolute;

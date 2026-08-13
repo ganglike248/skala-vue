@@ -57,6 +57,83 @@ export function buildAdvice({ temp, windSpeed, description, aqi }) {
   return tips.slice(0, 3)
 }
 
+// OpenWeatherMap이 주는 한국어 설명은 조건 코드(id)별로 어색한 직역이 많음
+// (예: '온흐림'=overcast clouds, '튼구름'=broken clouds, '실 비'=drizzle).
+// id(숫자, 로케일과 무관하게 항상 동일)를 기준으로 자연스러운 한국어 표현으로 바꿔줌
+const DESCRIPTION_MAP = {
+  200: '비를 동반한 천둥번개',
+  201: '비를 동반한 천둥번개',
+  202: '강한 비를 동반한 천둥번개',
+  210: '약한 천둥번개',
+  211: '천둥번개',
+  212: '강한 천둥번개',
+  221: '천둥번개',
+  230: '이슬비를 동반한 천둥번개',
+  231: '이슬비를 동반한 천둥번개',
+  232: '강한 이슬비를 동반한 천둥번개',
+  300: '약한 이슬비',
+  301: '이슬비',
+  302: '강한 이슬비',
+  310: '약한 이슬비',
+  311: '이슬비',
+  312: '강한 이슬비',
+  313: '소나기와 이슬비',
+  314: '강한 소나기와 이슬비',
+  321: '소나기성 이슬비',
+  500: '약한 비',
+  501: '비',
+  502: '강한 비',
+  503: '매우 강한 비',
+  504: '폭우',
+  511: '어는 비',
+  520: '약한 소나기',
+  521: '소나기',
+  522: '강한 소나기',
+  531: '소나기',
+  600: '약한 눈',
+  601: '눈',
+  602: '폭설',
+  611: '진눈깨비',
+  612: '약한 진눈깨비',
+  613: '진눈깨비',
+  615: '비와 눈',
+  616: '비와 눈',
+  620: '약한 소나기눈',
+  621: '소나기눈',
+  622: '강한 소나기눈',
+  701: '옅은 안개',
+  711: '연무',
+  721: '실안개',
+  731: '흙먼지',
+  741: '안개',
+  751: '모래바람',
+  761: '흙먼지',
+  762: '화산재',
+  771: '돌풍',
+  781: '토네이도',
+  800: '맑음',
+  801: '구름 조금',
+  802: '구름 많음',
+  803: '구름 많음',
+  804: '흐림',
+}
+export function friendlyDescription(id, fallback) {
+  return DESCRIPTION_MAP[id] ?? fallback
+}
+
+// 시간별 예보 스트립의 라벨을 만듦: 첫 항목은 '지금', 그 외엔 'N시',
+// 자정을 넘어 날짜가 바뀌는 지점에는 'M/D N시'로 날짜를 함께 표시
+export function formatHourLabel(hourly, idx) {
+  if (idx === 0) return '지금'
+  const current = new Date(hourly[idx].time)
+  const previous = new Date(hourly[idx - 1].time)
+  const hourLabel = current.toLocaleTimeString('ko-KR', { hour: 'numeric' })
+  const crossedDay = current.toDateString() !== previous.toDateString()
+  if (!crossedDay) return hourLabel
+  const dateLabel = current.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })
+  return `${dateLabel} ${hourLabel}`
+}
+
 // 섭씨 -> 화씨
 export function celsiusToFahrenheit(celsius) {
   return Math.round((celsius * 9) / 5 + 32)

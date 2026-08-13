@@ -15,13 +15,23 @@ const progress = computed(() => {
 
 const formatTime = (ms) => new Date(ms).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
 
+// 444분처럼 분 단위로만 표시되던 걸 '7시간 24분' 형태로
+function formatRemaining(ms) {
+  const totalMinutes = Math.round(ms / 60000)
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+  if (hours <= 0) return `${minutes}분`
+  if (minutes === 0) return `${hours}시간`
+  return `${hours}시간 ${minutes}분`
+}
+
 const remainingLabel = computed(() => {
   const now = Date.now()
   if (now < props.sunrise) {
-    return `일출까지 ${Math.round((props.sunrise - now) / 60000)}분 남았어요`
+    return `일출까지 ${formatRemaining(props.sunrise - now)} 남았어요`
   }
   if (now < props.sunset) {
-    return `일몰까지 ${Math.round((props.sunset - now) / 60000)}분 남았어요`
+    return `일몰까지 ${formatRemaining(props.sunset - now)} 남았어요`
   }
   return '오늘 해가 이미 졌어요'
 })
