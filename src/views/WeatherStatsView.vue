@@ -1,26 +1,32 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useWeatherStore } from '@/stores/weatherStore'
 
 const router = useRouter()
+const weatherStore = useWeatherStore()
 
-// 홈 화면과 동일한 도시 데이터를 재사용해 통계만 뽑아봄
-const weatherList = [
-  { id: 'city_01', name: '서울', temp: 24, status: '맑음' },
-  { id: 'city_02', name: '수원', temp: 19, status: '비' },
-  { id: 'city_03', name: '부산', temp: 26, status: '구름' },
-  { id: 'city_04', name: '제주', temp: 22, status: '구름' },
-  { id: 'city_05', name: '대전', temp: 30, status: '맑음' },
-  { id: 'city_06', name: '광주', temp: 27, status: '비' },
-]
-
-const averageTemp = computed(() => {
-  const total = weatherList.reduce((sum, city) => sum + city.temp, 0)
-  return Math.round((total / weatherList.length) * 10) / 10
+// 주소를 직접 입력해 들어와도 데이터가 없을 수 있으므로 이 화면에서도 로드 보장
+onMounted(() => {
+  weatherStore.ensureLoaded()
 })
 
-const hottest = computed(() => weatherList.reduce((a, b) => (a.temp > b.temp ? a : b)))
-const coldest = computed(() => weatherList.reduce((a, b) => (a.temp < b.temp ? a : b)))
+const weatherList = computed(() => weatherStore.weatherList)
+
+const averageTemp = computed(() => {
+  if (weatherList.value.length === 0) return 0
+  const total = weatherList.value.reduce((sum, city) => sum + city.temp, 0)
+  return Math.round((total / weatherList.value.length) * 10) / 10
+})
+
+const hottest = computed(() => {
+  if (weatherList.value.length === 0) return null
+  return weatherList.value.reduce((a, b) => (a.temp > b.temp ? a : b))
+})
+const coldest = computed(() => {
+  if (weatherList.value.length === 0) return null
+  return weatherList.value.reduce((a, b) => (a.temp < b.temp ? a : b))
+})
 
 const goHome = () => {
   router.push('/')
@@ -30,20 +36,27 @@ const goHome = () => {
 <template>
   <section class="stats-card">
     <h3>📊 날씨 통계</h3>
-    <p>
-      등록된 도시 수: <strong>{{ weatherList.length }}개</strong>
-    </p>
-    <p>
-      평균 기온: <strong>{{ averageTemp }}°C</strong>
-    </p>
-    <p>
-      가장 더운 도시:
-      <strong>{{ hottest.name }} ({{ hottest.temp }}°C) {{ hottest.status }}</strong>
-    </p>
-    <p>
-      가장 추운 도시:
-      <strong>{{ coldest.name }} ({{ coldest.temp }}°C) {{ coldest.status }}</strong>
-    </p>
+
+    <p v-if="weatherStore.error" class="empty-message">{{ weatherStore.error }}</p>
+    <p v-else-if="weatherList.length === 0" class="empty-message">날씨 데이터를 불러오는 중...</p>
+
+    <template v-else>
+      <p>
+        등록된 도시 수: <strong>{{ weatherList.length }}개</strong>
+      </p>
+      <p>
+        평균 기온: <strong>{{ averageTemp }}°C</strong>
+      </p>
+      <p>
+        가장 더운 도시:
+        <strong>{{ hottest.name }} ({{ hottest.temp }}°C) {{ hottest.status }}</strong>
+      </p>
+      <p>
+        가장 추운 도시:
+        <strong>{{ coldest.name }} ({{ coldest.temp }}°C) {{ coldest.status }}</strong>
+      </p>
+    </template>
+
     <button class="btn-home" @click="goHome">대시보드 홈으로 이동</button>
   </section>
 </template>
@@ -60,6 +73,11 @@ const goHome = () => {
 
 .stats-card p {
   margin: 8px 0;
+}
+
+.empty-message {
+  text-align: center;
+  color: #e74c3c;
 }
 
 .btn-home {

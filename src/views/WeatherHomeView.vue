@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFavoriteStore } from '@/stores/favoriteStore'
+import { useWeatherStore } from '@/stores/weatherStore'
 import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import TipBanner from '@/components/exercise/TipBanner.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
@@ -10,16 +11,12 @@ import StatusBar from '@/components/exercise/StatusBar.vue'
 
 const router = useRouter()
 const favoriteStore = useFavoriteStore()
+const weatherStore = useWeatherStore()
 
-// WeatherParent와 동일한 도시 데이터
-const weatherList = ref([
-  { id: 'city_01', name: '서울', temp: 24, status: '맑음', humidity: 55, dust: '보통' },
-  { id: 'city_02', name: '수원', temp: 19, status: '비', humidity: 80, dust: '좋음' },
-  { id: 'city_03', name: '부산', temp: 26, status: '구름', humidity: 62, dust: '좋음' },
-  { id: 'city_04', name: '제주', temp: 22, status: '구름', humidity: 70, dust: '보통' },
-  { id: 'city_05', name: '대전', temp: 30, status: '맑음', humidity: 45, dust: '나쁨' },
-  { id: 'city_06', name: '광주', temp: 27, status: '비', humidity: 75, dust: '보통' },
-])
+// 화면 진입 시 실시간 날씨 데이터 로드 (이미 불러온 상태면 재요청하지 않음)
+onMounted(() => {
+  weatherStore.ensureLoaded()
+})
 
 const searchQuery = ref('')
 const defaultCityInfo = '카드를 클릭하거나 검색해 보세요.'
@@ -35,8 +32,8 @@ const showFavoritesOnly = ref(false)
 const filteredWeatherList = computed(() => {
   const keyword = searchQuery.value.trim()
   let list = keyword
-    ? weatherList.value.filter((item) => item.name.includes(keyword))
-    : weatherList.value
+    ? weatherStore.weatherList.filter((item) => item.name.includes(keyword))
+    : weatherStore.weatherList
   if (showFavoritesOnly.value) {
     list = list.filter((item) => favoriteStore.isFavorite(item.id))
   }
@@ -87,11 +84,20 @@ const goToDetail = (item) => {
         ⭐ 즐겨찾기만 보기 ({{ favoriteStore.favoriteCount }})
       </label>
 
+      <!-- 실시간 API 로딩/에러 상태 -->
+      <p v-if="weatherStore.isLoading" class="empty-message">날씨 데이터를 불러오는 중...</p>
+      <p v-else-if="weatherStore.error" class="empty-message">{{ weatherStore.error }}</p>
+
       <!-- 검색 결과가 없을 때 -->
-      <p v-if="filteredWeatherList.length === 0" class="empty-message">검색 결과가 없습니다.</p>
+      <p
+        v-else-if="filteredWeatherList.length === 0"
+        class="empty-message"
+      >
+        검색 결과가 없습니다.
+      </p>
 
       <!-- 카드를 2열로 배치 (좁은 화면에서는 1열로 자동 축소) -->
-      <div class="card-grid">
+      <div v-else class="card-grid">
         <WeatherCard
           v-for="item in filteredWeatherList"
           :key="item.id"

@@ -1,58 +1,22 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useConfigStore } from '@/stores/configStore'
+import { useWeatherStore } from '@/stores/weatherStore'
 
 const route = useRoute()
 const router = useRouter()
 const configStore = useConfigStore()
+const weatherStore = useWeatherStore()
 
-// 도시 코드별 상세 기상관측 Mock Data (임시)
-const cityDetailMock = {
-  city_01: {
-    region: '대한민국 서울특별시',
-    temp: 24,
-    status: '맑음',
-    humidity: 55,
-    windSpeed: 2.5,
-  },
-  city_02: {
-    region: '대한민국 경기도 수원시',
-    temp: 19,
-    status: '비',
-    humidity: 80,
-    windSpeed: 3.1,
-  },
-  city_03: {
-    region: '대한민국 부산광역시',
-    temp: 26,
-    status: '구름',
-    humidity: 62,
-    windSpeed: 4.0,
-  },
-  city_04: {
-    region: '대한민국 제주특별자치도',
-    temp: 22,
-    status: '구름',
-    humidity: 70,
-    windSpeed: 5.2,
-  },
-  city_05: {
-    region: '대한민국 대전광역시',
-    temp: 30,
-    status: '맑음',
-    humidity: 45,
-    windSpeed: 1.8,
-  },
-  city_06: { region: '대한민국 광주광역시', temp: 27, status: '비', humidity: 75, windSpeed: 2.9 },
-}
-
-const cityDetail = ref(null)
-
-// Router 동적 경로(:cityId)로 넘어온 도시ID를 Mount 시점에 Mock Data에서 선택
+// 주소를 직접 입력해 들어와도 데이터가 없을 수 있으므로 이 화면에서도 로드 보장
 onMounted(() => {
-  cityDetail.value = cityDetailMock[route.params.cityId] ?? null
+  weatherStore.ensureLoaded()
 })
+
+// Router 동적 경로(:cityId)로 넘어온 도시ID로 store에서 실시간 데이터 조회
+// (fetch가 끝나기 전엔 null → v-else 안내 문구, 끝나면 자동으로 반응형 갱신)
+const cityDetail = computed(() => weatherStore.cityDetailMap[route.params.cityId] ?? null)
 
 // 스토어의 단위 설정이 'fahrenheit'일 때만 화씨로 변환해서 표시
 const displayTemp = computed(() => {
@@ -88,13 +52,15 @@ const goHome = () => {
         📍 지정 지역: <strong>{{ cityDetail.region }}</strong>
       </p>
       <p>실시간 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
-      <p>기상 현황: {{ cityDetail.status }}</p>
+      <p>기상 현황: {{ cityDetail.description }}</p>
       <p>대기 습도: {{ cityDetail.humidity }}%</p>
       <p class="wind-row">
         현재 풍속: {{ displayWindSpeed }}{{ configStore.windSpeedSymbol }}
         <button class="btn-wind-toggle" @click="configStore.toggleWindSpeedUnit">단위변경</button>
       </p>
     </div>
+    <p v-else-if="weatherStore.isLoading" class="empty-message">날씨 데이터를 불러오는 중...</p>
+    <p v-else-if="weatherStore.error" class="empty-message">{{ weatherStore.error }}</p>
     <p v-else class="empty-message">
       해당 도시 코드({{ route.params.cityId }})를 찾을 수 없습니다.
     </p>

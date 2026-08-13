@@ -50,6 +50,15 @@ const displayTemp = computed(() => {
   }
   return rawTemp
 })
+
+// 체감 온도도 현재 기온과 동일한 단위 설정을 따라 변환
+const displayFeelsLike = computed(() => {
+  const rawTemp = props.cityItem.feelsLike
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((rawTemp * 9) / 5 + 32)
+  }
+  return rawTemp
+})
 </script>
 
 <template>
@@ -74,7 +83,7 @@ const displayTemp = computed(() => {
     <!-- 부모가 내려준 isExpanded로 상세정보 패널 토글 -->
     <div v-show="isExpanded" class="extra-info">
       <p>습도: {{ cityItem.humidity }}%</p>
-      <p>미세먼지: {{ cityItem.dust }}</p>
+      <p>체감 온도: {{ displayFeelsLike }}{{ configStore.unitSymbol }}</p>
     </div>
 
     <button class="btn-detail" @click.stop="emit('click-detail', cityItem)">상세보기</button>

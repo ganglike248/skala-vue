@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import OPENWEATHER_API_KEY from '@/env.js'
 
 const weatherData = ref(null)
 const isLoading = ref(false)
@@ -8,7 +9,7 @@ const isLoading = ref(false)
 const handleFetchWeather = async () => {
   isLoading.value = true
 
-  const API_KEY = '8964edc63b366d27b5b728b7976570b7'
+  const API_KEY = OPENWEATHER_API_KEY
   const URL = `https://api.openweathermap.org/data/2.5/weather?lat=35.158582&lon=126.804975&appid=${API_KEY}&units=metric&lang=kr`
 
   try {
