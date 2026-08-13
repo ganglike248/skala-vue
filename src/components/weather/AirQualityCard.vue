@@ -66,7 +66,7 @@ const meterPct = computed(() => Math.min(100, Math.max(4, ((props.aqi - 1) / 4) 
   height: 36px;
   border-radius: 11px;
   color: var(--color-primary);
-  background: rgba(21, 145, 220, 0.1);
+  background: rgba(118, 159, 205, 0.1);
   flex-shrink: 0;
 }
 .card-title {

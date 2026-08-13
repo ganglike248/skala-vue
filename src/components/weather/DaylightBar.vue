@@ -63,6 +63,8 @@ const remainingLabel = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  /* 옆 카드(대기질)보다 내용이 짧아 늘어났을 때 아래가 비어 보이지 않도록 내용을 고르게 분산 */
+  justify-content: space-between;
 }
 .card-head {
   display: flex;

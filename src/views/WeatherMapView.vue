@@ -388,7 +388,7 @@ function goDetail() {
   font-size: 0.82rem;
   font-weight: 800;
   color: #fff;
-  background: var(--pin-color, #1591dc);
+  background: var(--pin-color, #769fcd);
   border: 3px solid #fff;
   box-shadow: 0 6px 16px rgba(16, 24, 40, 0.28);
   cursor: pointer;
@@ -398,7 +398,7 @@ function goDetail() {
   transform: scale(1.08);
 }
 .weather-pin.is-active {
-  outline: 3px solid rgba(21, 145, 220, 0.45);
+  outline: 3px solid rgba(118, 159, 205, 0.45);
   outline-offset: 2px;
 }
 .weather-pin-tooltip {

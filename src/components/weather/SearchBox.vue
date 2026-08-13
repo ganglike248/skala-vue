@@ -39,7 +39,7 @@ function handleAdd(candidate) {
       <input
         v-model="query"
         type="text"
-        placeholder="도시 이름으로 검색해서 추가해보세요 (예: 춘천, Tokyo, Paris)"
+        placeholder="도시 이름으로 검색"
         @focus="isOpen = query.trim().length > 0"
       />
       <Loader2 v-if="weatherStore.isSearching" :size="16" class="spin" />

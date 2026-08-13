@@ -208,7 +208,7 @@ const navItems = computed(() => [
   min-height: 100vh;
   background: var(--color-bg);
   background-image:
-    radial-gradient(900px 480px at 12% -8%, rgba(21, 145, 220, 0.12), transparent 60%),
+    radial-gradient(900px 480px at 12% -8%, rgba(118, 159, 205, 0.12), transparent 60%),
     radial-gradient(700px 420px at 100% 0%, rgba(106, 123, 255, 0.1), transparent 55%);
 }
 
@@ -270,7 +270,8 @@ const navItems = computed(() => [
   height: 38px;
   border-radius: 12px;
   color: #fff;
-  background: linear-gradient(135deg, var(--sky-1), var(--sky-2) 60%, var(--sky-3));
+  /* 팔레트 4색이 전부 파스텔이라 로고 배지는 눈에 띄게 더 진한 톤으로 별도 지정 */
+  background: linear-gradient(135deg, var(--color-primary), #1f4a73);
   box-shadow: var(--shadow-pop);
   flex-shrink: 0;
 }
@@ -313,13 +314,12 @@ const navItems = computed(() => [
     transform 0.15s ease;
 }
 .nav-link:hover {
-  background: rgba(21, 145, 220, 0.08);
+  background: rgba(118, 159, 205, 0.08);
   color: var(--color-primary);
 }
 .nav-link.router-link-exact-active {
   background: linear-gradient(135deg, var(--color-primary), var(--sky-3));
   color: #fff;
-  box-shadow: var(--shadow-pop);
   transform: translateX(2px);
 }
 
@@ -354,7 +354,7 @@ const navItems = computed(() => [
   padding: 9px 12px;
   border-radius: 12px;
   border: 1px dashed var(--color-primary);
-  background: rgba(21, 145, 220, 0.08);
+  background: rgba(118, 159, 205, 0.08);
   color: var(--color-primary);
   font-size: 0.78rem;
   font-weight: 700;
@@ -393,7 +393,7 @@ const navItems = computed(() => [
   height: 36px;
   border-radius: 999px;
   border: 1px solid var(--color-border);
-  background: var(--color-surface-alt);
+  background: var(--color-surface-solid);
   color: var(--color-text);
   font-size: 0.74rem;
   font-weight: 700;

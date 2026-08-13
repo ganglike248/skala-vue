@@ -397,9 +397,7 @@ function formatDate(dateStr) {
   border: 1px solid var(--color-border);
 }
 .hour-pill.now {
-  background: linear-gradient(160deg, var(--color-primary), var(--sky-3));
-  border-color: transparent;
-  color: #fff;
+  border: 2px solid var(--color-primary);
 }
 .hour-label {
   display: flex;
@@ -434,7 +432,7 @@ function formatDate(dateStr) {
   grid-template-columns: 84px 32px 1fr auto;
 }
 .daily-row.is-today {
-  background: rgba(21, 145, 220, 0.07);
+  background: rgba(118, 159, 205, 0.07);
   border-radius: var(--radius-sm);
 }
 .day-label {

@@ -138,7 +138,6 @@ const techStack = [
   font-size: 0.92rem;
   line-height: 1.7;
   margin-bottom: 22px;
-  max-width: 760px;
 }
 .btn-primary {
   width: 100%;
@@ -168,7 +167,7 @@ const techStack = [
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: rgba(21, 145, 220, 0.1);
+  background: rgba(118, 159, 205, 0.1);
   color: var(--color-primary);
   flex-shrink: 0;
 }
@@ -210,7 +209,7 @@ const techStack = [
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: rgba(21, 145, 220, 0.1);
+  background: rgba(118, 159, 205, 0.1);
   color: var(--color-primary);
   flex-shrink: 0;
 }

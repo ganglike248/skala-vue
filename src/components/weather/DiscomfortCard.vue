@@ -17,7 +17,9 @@ const meterWidth = computed(() => Math.min(100, Math.max(4, (di.value / 90) * 10
 <template>
   <div class="discomfort-card glass-card">
     <div class="card-head">
-      <span class="card-icon" :style="{ color: level.color, background: level.color + '1a' }"><Gauge :size="16" /></span>
+      <span class="card-icon" :style="{ color: level.color, background: level.color + '1a' }"
+        ><Gauge :size="16"
+      /></span>
       <div>
         <p class="card-title">오늘의 불쾌지수</p>
         <p class="card-value">
@@ -25,10 +27,10 @@ const meterWidth = computed(() => Math.min(100, Math.max(4, (di.value / 90) * 10
         </p>
       </div>
     </div>
-    <p class="message text-muted">{{ level.message }}</p>
     <div class="meter-track">
       <div class="meter-thumb" :style="{ left: meterWidth + '%' }" />
     </div>
+    <p class="message text-muted">{{ level.message }}</p>
   </div>
 </template>
 
@@ -38,6 +40,8 @@ const meterWidth = computed(() => Math.min(100, Math.max(4, (di.value / 90) * 10
   display: flex;
   flex-direction: column;
   gap: 14px;
+  /* 옆 카드(대기질)보다 내용이 짧아 늘어났을 때 아래가 비어 보이지 않도록 내용을 고르게 분산 */
+  justify-content: space-between;
 }
 .card-head {
   display: flex;

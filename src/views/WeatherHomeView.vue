@@ -185,7 +185,9 @@ function goDetail(id) {
           </div>
         </div>
 
-        <WeatherIcon :code="active.current.iconCode" :size="72" class="icon-float" />
+        <div class="hero-icon-badge icon-float">
+          <WeatherIcon :code="active.current.iconCode" :size="44" />
+        </div>
       </div>
 
       <div class="hero-body">
@@ -207,17 +209,6 @@ function goDetail(id) {
 
         <AdviceChips :tips="advice" />
       </div>
-
-      <!-- 보조 위젯: 대기질/불쾌지수/일출일몰 (가로 배치) -->
-      <section v-if="active?.current" class="widget-rail">
-        <AirQualityCard
-          v-if="active.airQuality"
-          :aqi="active.airQuality.aqi"
-          :components="active.airQuality.components"
-        />
-        <DiscomfortCard :temp="active.current.temp" :humidity="active.current.humidity" />
-        <DaylightBar :sunrise="active.current.sunrise" :sunset="active.current.sunset" />
-      </section>
     </template>
 
     <!-- 오늘 시간별 기온 -->
@@ -237,6 +228,16 @@ function goDetail(id) {
           <span class="hour-pop">💧{{ h.pop }}%</span>
         </div>
       </div>
+    </section>
+    <!-- 보조 위젯: 대기질/불쾌지수/일출일몰 (가로 배치) -->
+    <section v-if="active?.current" class="widget-rail">
+      <AirQualityCard
+        v-if="active.airQuality"
+        :aqi="active.airQuality.aqi"
+        :components="active.airQuality.components"
+      />
+      <DiscomfortCard :temp="active.current.temp" :humidity="active.current.humidity" />
+      <DaylightBar :sunrise="active.current.sunrise" :sunset="active.current.sunset" />
     </section>
 
     <!-- 즐겨찾기 미리보기 -->
@@ -305,6 +306,17 @@ function goDetail(id) {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+.hero-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-surface-solid);
+  box-shadow: var(--shadow-soft);
+  flex-shrink: 0;
 }
 
 /* ---------- 지역 변경 드롭다운 ---------- */
@@ -387,10 +399,10 @@ function goDetail(id) {
   text-align: left;
 }
 .switcher-option:hover {
-  background: rgba(21, 145, 220, 0.1);
+  background: rgba(118, 159, 205, 0.1);
 }
 .switcher-option.active {
-  background: rgba(21, 145, 220, 0.14);
+  background: rgba(118, 159, 205, 0.14);
   color: var(--color-primary);
 }
 .switcher-temp {
@@ -486,10 +498,7 @@ html.dark .switcher-panel.glass-card {
   color: var(--color-text);
 }
 .hour-pill.now {
-  background: linear-gradient(160deg, var(--color-primary), var(--sky-3));
-  border-color: transparent;
-  color: #fff;
-  box-shadow: var(--shadow-pop);
+  border: 2px solid var(--color-primary);
 }
 .hour-label {
   display: flex;

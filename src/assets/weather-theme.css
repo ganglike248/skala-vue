@@ -13,22 +13,24 @@
   --color-surface: rgba(255, 255, 255, 0.86);
   --color-surface-solid: #ffffff;
   /* 시간별 pill/스탯 타일 등 보조 표면에 팔레트에서 제일 옅은 톤을 그대로 사용 */
-  --color-surface-alt: #c4e2f5;
+  --color-surface-alt: #f7fbfc;
   --color-text: #0f1b2d;
   --color-text-muted: #66738c;
   --color-border: rgba(16, 30, 54, 0.08);
-  /* 프로젝트 주요 색상 (진한 순): #2C5EAD -> #1591DC -> #4BB8FA -> #C4E2F5 */
-  --color-primary: #1591dc;
-  --color-primary-2: #4bb8fa;
+  /* 프로젝트 주요 색상 (연한 순): #F7FBFC -> #D6E6F2 -> #B9D7EA -> #769FCD
+     primary는 흰 글자를 올리거나 텍스트 색으로도 쓰이므로 4개 중 가장 진한 톤을 사용.
+     sky-3는 primary와 짝을 이뤄 그라디언트를 만들므로 서로 다른 톤이어야 함 */
+  --color-primary: #769fcd;
+  --color-primary-2: #d6e6f2;
   --color-accent: #ff9a3d;
 
-  --sky-1: #c4e2f5;
-  --sky-2: #4bb8fa;
-  --sky-3: #2c5ead;
+  --sky-1: #f7fbfc;
+  --sky-2: #d6e6f2;
+  --sky-3: #b9d7ea;
 
   --shadow-soft: 0 10px 34px rgba(20, 34, 64, 0.08);
   --shadow-strong: 0 24px 64px rgba(20, 34, 64, 0.18);
-  --shadow-pop: 0 14px 40px rgba(21, 145, 220, 0.28);
+  --shadow-pop: 0 14px 40px rgba(118, 159, 205, 0.28);
 
   --radius-xl: 30px;
   --radius-lg: 24px;
@@ -122,7 +124,7 @@ body {
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 700;
-  background: rgba(21, 145, 220, 0.1);
+  background: rgba(118, 159, 205, 0.1);
   color: var(--color-primary);
   border: none;
   cursor: pointer;
@@ -215,7 +217,6 @@ body {
   font-weight: 800;
   font-size: 0.9rem;
   cursor: pointer;
-  box-shadow: var(--shadow-pop);
   transition: transform 0.15s ease;
 }
 .btn-primary:hover {
@@ -288,7 +289,7 @@ body {
   transition: background-color 0.15s ease;
 }
 .list-row:hover {
-  background: rgba(21, 145, 220, 0.07);
+  background: rgba(118, 159, 205, 0.07);
 }
 .list-row + .list-row {
   border-top: 1px solid var(--color-border);
