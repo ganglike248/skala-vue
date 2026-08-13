@@ -400,3 +400,29 @@ deep watch로 내부 하나만 변경<br>
   - 실무 권장 방식
 - 생성 시 식별자 이름은 'use+파일명+Store'로 작성
 - 구조분해할당 하면 반응형 꺠짐
+
+# day4
+
+## API 통신
+
+### HTTP
+
+- 웹 브라우저와 웹 서버가 인터넷상에서 데이터를 주고받기 위해 세계적으로 약속한 표준 통신 규약
+- 메서드(강제는 아님)
+  - GET: 읽기(Read)
+  - POST: 새로운 데이터 넣기(Create)
+  - PUT/PATCH: 수정(Update)
+  - DELETE: 삭제(Delete)
+- API
+  - 데이터를 주고 받는 약속
+- REST API
+  - HTTP 활용하면서, 자원을 이름으로 구분하여 데이터를 주고 받는 방식
+  - HTTP Method(GET, POST, DELETE, PUT)를 활용하여 CRUD 적용하는 것
+  - 주소(URL)는 오직 명사(자원)로만 구성한다
+    - X: /getWeather, /deleteUser
+    - O: /weather, /users
+
+### Axios
+
+- 비동기 통신 패키지
+- 실무에서 많이 사용

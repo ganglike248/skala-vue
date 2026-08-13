@@ -14,8 +14,8 @@ const textInput = ref('') // 입력창과 연결된 글자 데이터 박스
 // ----------------------------------------------------
 const handleRead = async () => {
   try {
-    // 공부용으로 딱 3개만 들고 옵니다.
-    const response = await axios.get(BASE_URL, { params: { _limit: 3 } })
+    // 공부용으로 딱 5개만 들고 옵니다.
+    const response = await axios.get(BASE_URL, { params: { _limit: 5 } })
     items.value = response.data
     console.log('GET 성공:', response.data)
   } catch (error) {
