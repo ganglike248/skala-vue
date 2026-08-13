@@ -1,7 +1,16 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { BarChart3, Flame, Snowflake, Building2, Droplets, Wind, ArrowUp, ArrowDown } from '@lucide/vue'
+import {
+  BarChart3,
+  Flame,
+  Snowflake,
+  Building2,
+  Droplets,
+  Wind,
+  ArrowUp,
+  ArrowDown,
+} from '@lucide/vue'
 import { useWeatherStore } from '@/stores/weatherStore'
 import { useConfigStore } from '@/stores/configStore'
 import { celsiusToFahrenheit, msToMph } from '@/utils/weatherMath'
@@ -92,7 +101,9 @@ function goDetail(id) {
         <div class="stat-tile glass-card">
           <BarChart3 :size="18" class="text-muted" />
           <span class="tile-label text-muted">평균 기온</span>
-          <strong class="tile-value">{{ displayTemp(averageTemp) }}{{ configStore.unitSymbol }}</strong>
+          <strong class="tile-value"
+            >{{ displayTemp(averageTemp) }}{{ configStore.unitSymbol }}</strong
+          >
         </div>
         <div class="stat-tile glass-card">
           <Droplets :size="18" class="text-muted" />
@@ -101,18 +112,21 @@ function goDetail(id) {
         </div>
         <div class="stat-tile glass-card" @click="goDetail(hottest.id)">
           <Flame :size="18" style="color: #e74c3c" />
-          <span class="tile-label text-muted">가장 더운 도시</span>
+          <span class="tile-label text-muted">가장 기온이 높은 도시</span>
           <strong class="tile-value">{{ hottest.name }} {{ displayTemp(hottest.temp) }}°</strong>
         </div>
         <div class="stat-tile glass-card" @click="goDetail(coldest.id)">
           <Snowflake :size="18" style="color: #3498db" />
-          <span class="tile-label text-muted">가장 추운 도시</span>
+          <span class="tile-label text-muted">가장 기온이 낮은 도시</span>
           <strong class="tile-value">{{ coldest.name }} {{ displayTemp(coldest.temp) }}°</strong>
         </div>
         <div class="stat-tile glass-card" @click="goDetail(windiest.id)">
           <Wind :size="18" style="color: #34c8e8" />
           <span class="tile-label text-muted">바람이 가장 강한 도시</span>
-          <strong class="tile-value">{{ windiest.name }} {{ displayWind(windiest.windSpeed) }}{{ configStore.windSpeedSymbol }}</strong>
+          <strong class="tile-value"
+            >{{ windiest.name }} {{ displayWind(windiest.windSpeed)
+            }}{{ configStore.windSpeedSymbol }}</strong
+          >
         </div>
       </section>
 
@@ -135,7 +149,11 @@ function goDetail(id) {
                   @click="toggleSort(col.key)"
                 >
                   {{ col.label }}
-                  <component :is="sortKey === col.key && sortDir === 'asc' ? ArrowUp : ArrowDown" :size="12" class="sort-icon" />
+                  <component
+                    :is="sortKey === col.key && sortDir === 'asc' ? ArrowUp : ArrowDown"
+                    :size="12"
+                    class="sort-icon"
+                  />
                 </th>
               </tr>
             </thead>
