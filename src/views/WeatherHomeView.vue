@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import { onClickOutside } from '@vueuse/core'
 import {
   MapPin,
@@ -27,7 +26,6 @@ import SearchBox from '@/components/weather/SearchBox.vue'
 
 // 배경 그라디언트/파티클은 App.vue가 app-body 전체에 이미 깔아주므로
 // 이 화면은 그 위에 얹히는 콘텐츠(반투명 카드들)만 신경 쓰면 됨
-const router = useRouter()
 const weatherStore = useWeatherStore()
 const configStore = useConfigStore()
 const favoriteStore = useFavoriteStore()
@@ -103,14 +101,10 @@ function pickCity(id) {
   showSwitcher.value = false
 }
 
-// 즐겨찾기 미리보기 (현재 날씨가 이미 로드된 것만)
+// 즐겨찾기 미리보기 (현재 날씨가 이미 로드된 것만) - 클릭하면 페이지 이동이 아니라 지역만 전환
 const favoriteCities = computed(() =>
   weatherStore.allCities.filter((c) => favoriteStore.isFavorite(c.id) && c.current).slice(0, 4),
 )
-
-function goDetail(id) {
-  router.push(`/weather/${id}`)
-}
 </script>
 
 <template>
@@ -147,47 +141,67 @@ function goDetail(id) {
         있어요.
       </p>
 
-      <div class="hero-top">
-        <div ref="switcherRef" class="location-switcher">
-          <button class="location" @click="showSwitcher = !showSwitcher">
-            <MapPin :size="16" />
-            {{ active.name }}
-            <small>{{ active.region }}</small>
-            <ChevronDown :size="14" class="caret" :class="{ open: showSwitcher }" />
-          </button>
-
-          <div v-if="showSwitcher" class="switcher-panel glass-card">
-            <p class="switcher-heading text-muted">지역 변경</p>
-            <button
-              class="switcher-option"
-              :class="{ active: selectionStore.selectedCityId === 'me' }"
-              @click="pickCity('me')"
-            >
-              <LocateFixed :size="15" />
-              <span>내 위치</span>
+      <div class="hero-top-group">
+        <div class="hero-top">
+          <div ref="switcherRef" class="location-switcher">
+            <button class="location" @click="showSwitcher = !showSwitcher">
+              <MapPin :size="16" />
+              {{ active.name }}
+              <small>{{ active.region }}</small>
+              <ChevronDown :size="14" class="caret" :class="{ open: showSwitcher }" />
             </button>
-            <div class="switcher-divider" />
-            <div class="switcher-list">
+
+            <div v-if="showSwitcher" class="switcher-panel glass-card">
+              <p class="switcher-heading text-muted">지역 변경</p>
               <button
-                v-for="city in cityOptions"
-                :key="city.id"
                 class="switcher-option"
-                :class="{ active: selectionStore.selectedCityId === city.id }"
-                @click="pickCity(city.id)"
+                :class="{ active: selectionStore.selectedCityId === 'me' }"
+                @click="pickCity('me')"
               >
-                <WeatherIcon v-if="city.current" :code="city.current.iconCode" :size="15" />
-                <span>{{ city.name }}</span>
-                <strong v-if="city.current" class="switcher-temp">{{ city.current.temp }}°</strong>
+                <LocateFixed :size="15" />
+                <span>내 위치</span>
               </button>
+              <div class="switcher-divider" />
+              <div class="switcher-list">
+                <button
+                  v-for="city in cityOptions"
+                  :key="city.id"
+                  class="switcher-option"
+                  :class="{ active: selectionStore.selectedCityId === city.id }"
+                  @click="pickCity(city.id)"
+                >
+                  <WeatherIcon v-if="city.current" :code="city.current.iconCode" :size="15" />
+                  <span>{{ city.name }}</span>
+                  <strong v-if="city.current" class="switcher-temp">{{ city.current.temp }}°</strong>
+                </button>
+              </div>
+              <div class="switcher-divider" />
+              <SearchBox @added="pickCity" />
             </div>
-            <div class="switcher-divider" />
-            <SearchBox @added="pickCity" />
+          </div>
+
+          <div class="hero-icon-badge icon-float">
+            <WeatherIcon :code="active.current.iconCode" :size="44" />
           </div>
         </div>
 
-        <div class="hero-icon-badge icon-float">
-          <WeatherIcon :code="active.current.iconCode" :size="44" />
-        </div>
+        <!-- 즐겨찾기 미리보기: 지역 바로 아래, 클릭하면 페이지 이동 없이 지역만 전환 -->
+        <section v-if="favoriteCities.length > 0" class="favorites-preview">
+          <div class="section-title"><Star :size="15" />즐겨찾는 도시</div>
+          <div class="preview-row">
+            <button
+              v-for="city in favoriteCities"
+              :key="city.id"
+              class="preview-chip glass-card"
+              :class="{ active: selectionStore.selectedCityId === city.id }"
+              @click="pickCity(city.id)"
+            >
+              <WeatherIcon :code="city.current.iconCode" :size="16" />
+              <span class="preview-name">{{ city.name }}</span>
+              <strong>{{ city.current.temp }}°</strong>
+            </button>
+          </div>
+        </section>
       </div>
 
       <div class="hero-body">
@@ -240,23 +254,6 @@ function goDetail(id) {
       <DaylightBar :sunrise="active.current.sunrise" :sunset="active.current.sunset" />
     </section>
 
-    <!-- 즐겨찾기 미리보기 -->
-    <section v-if="favoriteCities.length > 0" class="favorites-preview">
-      <div class="section-title"><Star :size="17" />즐겨찾는 도시</div>
-      <div class="preview-row">
-        <button
-          v-for="city in favoriteCities"
-          :key="city.id"
-          class="preview-chip glass-card"
-          @click="goDetail(city.id)"
-        >
-          <WeatherIcon :code="city.current.iconCode" :size="24" />
-          <span class="preview-name">{{ city.name }}</span>
-          <strong>{{ city.current.temp }}°</strong>
-        </button>
-      </div>
-    </section>
-
     <!-- 다른 지역 CTA -->
     <div class="cta-row">
       <RouterLink to="/regions" class="regions-cta glass-card">
@@ -301,6 +298,12 @@ function goDetail(id) {
   border-radius: var(--radius-sm);
 }
 
+/* 지역(hero-top)과 즐겨찾는 도시를 하나로 묶어서, 다른 섹션들보다 더 가까운 간격으로 붙임 */
+.hero-top-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .hero-top {
   display: flex;
   align-items: flex-start;
@@ -523,23 +526,29 @@ html.dark .switcher-panel.glass-card {
 
 .favorites-preview .section-title {
   color: #fff;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
 }
 .favorites-preview .preview-row {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .preview-chip {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
-  border: none;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: transform 0.15s ease;
 }
 .preview-chip:hover {
   transform: translateY(-3px);
+}
+.preview-chip.active {
+  border-color: var(--color-primary);
 }
 .preview-chip strong {
   color: var(--color-primary);
