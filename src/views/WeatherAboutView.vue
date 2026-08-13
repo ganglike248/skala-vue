@@ -158,6 +158,8 @@ const techStack = [
   align-items: flex-start;
   gap: 12px;
   padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
 }
 .feature-icon {
   display: inline-flex;
@@ -166,7 +168,7 @@ const techStack = [
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: rgba(52, 120, 246, 0.1);
+  background: rgba(21, 145, 220, 0.1);
   color: var(--color-primary);
   flex-shrink: 0;
 }
@@ -198,6 +200,8 @@ const techStack = [
   align-items: flex-start;
   gap: 12px;
   padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
 }
 .tech-icon {
   display: inline-flex;
@@ -206,7 +210,7 @@ const techStack = [
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: rgba(52, 120, 246, 0.1);
+  background: rgba(21, 145, 220, 0.1);
   color: var(--color-primary);
   flex-shrink: 0;
 }

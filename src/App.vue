@@ -208,7 +208,7 @@ const navItems = computed(() => [
   min-height: 100vh;
   background: var(--color-bg);
   background-image:
-    radial-gradient(900px 480px at 12% -8%, rgba(52, 120, 246, 0.12), transparent 60%),
+    radial-gradient(900px 480px at 12% -8%, rgba(21, 145, 220, 0.12), transparent 60%),
     radial-gradient(700px 420px at 100% 0%, rgba(106, 123, 255, 0.1), transparent 55%);
 }
 
@@ -313,7 +313,7 @@ const navItems = computed(() => [
     transform 0.15s ease;
 }
 .nav-link:hover {
-  background: rgba(52, 120, 246, 0.08);
+  background: rgba(21, 145, 220, 0.08);
   color: var(--color-primary);
 }
 .nav-link.router-link-exact-active {
@@ -354,7 +354,7 @@ const navItems = computed(() => [
   padding: 9px 12px;
   border-radius: 12px;
   border: 1px dashed var(--color-primary);
-  background: rgba(52, 120, 246, 0.08);
+  background: rgba(21, 145, 220, 0.08);
   color: var(--color-primary);
   font-size: 0.78rem;
   font-weight: 700;

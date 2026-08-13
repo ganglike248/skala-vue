@@ -238,7 +238,7 @@ function goDetail(id) {
   transition: background-color 0.15s ease;
 }
 .comparison-table tbody tr:hover {
-  background: rgba(52, 120, 246, 0.07);
+  background: rgba(21, 145, 220, 0.07);
 }
 .comparison-table tbody td {
   border-bottom: 1px solid var(--color-border);

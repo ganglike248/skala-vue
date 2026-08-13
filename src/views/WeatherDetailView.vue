@@ -434,7 +434,7 @@ function formatDate(dateStr) {
   grid-template-columns: 84px 32px 1fr auto;
 }
 .daily-row.is-today {
-  background: rgba(52, 120, 246, 0.07);
+  background: rgba(21, 145, 220, 0.07);
   border-radius: var(--radius-sm);
 }
 .day-label {
@@ -457,7 +457,7 @@ function formatDate(dateStr) {
 }
 .pop-badge {
   font-size: 0.72rem;
-  color: #3d84f5;
+  color: var(--color-primary);
   font-weight: 700;
 }
 .day-temps {

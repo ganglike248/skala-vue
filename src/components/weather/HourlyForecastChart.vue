@@ -12,8 +12,8 @@ const isDark = useDark()
 const configStore = useConfigStore()
 const toDisplay = (temp) => (configStore.unit === 'fahrenheit' ? celsiusToFahrenheit(temp) : temp)
 
-const LINE_LIGHT = '#2a78d6'
-const LINE_DARK = '#3987e5'
+const LINE_LIGHT = '#1591dc'
+const LINE_DARK = '#4bb8fa'
 const MUTED_LIGHT = '#5b6478'
 const MUTED_DARK = '#93a0bd'
 const GRID_LIGHT = '#e1e0d9'

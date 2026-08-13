@@ -83,7 +83,7 @@ function handleRemove(cityId) {
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--color-primary);
-  background: rgba(52, 120, 246, 0.1);
+  background: rgba(21, 145, 220, 0.1);
 }
 .intro {
   margin-top: -10px;

@@ -42,7 +42,9 @@ watch(
 )
 
 const isLoading = computed(() => !active.value?.current)
-const isFallback = computed(() => selectionStore.selectedCityId === 'me' && weatherStore.myLocationStatus === 'denied')
+const isFallback = computed(
+  () => selectionStore.selectedCityId === 'me' && weatherStore.myLocationStatus === 'denied',
+)
 
 const displayTemp = computed(() => {
   if (!active.value?.current) return null
@@ -85,7 +87,9 @@ const advice = computed(() => {
 // '지금'을 포함해 10개만, 날짜가 바뀌는 지점은 두 줄(날짜/시간)로 표시
 const hourly = computed(() => (active.value?.forecast?.hourly ?? []).slice(0, 10))
 const hourlyTemp = (t) => (configStore.unit === 'fahrenheit' ? celsiusToFahrenheit(t) : t)
-const hourlyLabels = computed(() => hourly.value.map((_, idx) => formatHourLabel(hourly.value, idx)))
+const hourlyLabels = computed(() =>
+  hourly.value.map((_, idx) => formatHourLabel(hourly.value, idx)),
+)
 
 // ---- 지역 변경 드롭다운 ----
 const showSwitcher = ref(false)
@@ -112,15 +116,35 @@ function goDetail(id) {
 <template>
   <div class="page home-page">
     <div v-if="isLoading" class="hero-loading">
-      <div class="skeleton" style="height: 20px; width: 140px; margin-bottom: 18px; background: rgba(255, 255, 255, 0.25)" />
-      <div class="skeleton" style="height: 74px; width: 220px; margin-bottom: 14px; background: rgba(255, 255, 255, 0.25)" />
-      <div class="skeleton" style="height: 16px; width: 260px; background: rgba(255, 255, 255, 0.25)" />
+      <div
+        class="skeleton"
+        style="
+          height: 20px;
+          width: 140px;
+          margin-bottom: 18px;
+          background: rgba(255, 255, 255, 0.25);
+        "
+      />
+      <div
+        class="skeleton"
+        style="
+          height: 74px;
+          width: 220px;
+          margin-bottom: 14px;
+          background: rgba(255, 255, 255, 0.25);
+        "
+      />
+      <div
+        class="skeleton"
+        style="height: 16px; width: 260px; background: rgba(255, 255, 255, 0.25)"
+      />
     </div>
 
     <template v-else>
       <p v-if="isFallback" class="location-banner">
         <AlertTriangle :size="14" />
-        위치 권한이 없어 기본 지역을 표시했어요. 브라우저 위치 권한을 허용하면 내 지역 날씨를 볼 수 있어요.
+        위치 권한이 없어 기본 지역을 표시했어요. 브라우저 위치 권한을 허용하면 내 지역 날씨를 볼 수
+        있어요.
       </p>
 
       <div class="hero-top">
@@ -165,11 +189,18 @@ function goDetail(id) {
       </div>
 
       <div class="hero-body">
-        <div class="hero-temp temp-float">{{ displayTemp }}<span class="unit">{{ configStore.unitSymbol }}</span></div>
-        <p class="hero-desc">{{ active.current.description }} · 체감 {{ displayFeelsLike }}{{ configStore.unitSymbol }}</p>
+        <div class="hero-temp temp-float">
+          {{ displayTemp }}<span class="unit">{{ configStore.unitSymbol }}</span>
+        </div>
+        <p class="hero-desc">
+          {{ active.current.description }} · 체감 {{ displayFeelsLike }}{{ configStore.unitSymbol }}
+        </p>
 
         <div class="hero-stats">
-          <span v-if="todayRange"><ThermometerSun :size="14" /> 최고 {{ hourlyTemp(todayRange.max) }}° / 최저 {{ hourlyTemp(todayRange.min) }}°</span>
+          <span v-if="todayRange"
+            ><ThermometerSun :size="14" /> 최고 {{ hourlyTemp(todayRange.max) }}° / 최저
+            {{ hourlyTemp(todayRange.min) }}°</span
+          >
           <span><Droplets :size="14" /> 습도 {{ active.current.humidity }}%</span>
           <span><Wind :size="14" /> 풍속 {{ displayWind }}{{ configStore.windSpeedSymbol }}</span>
         </div>
@@ -179,7 +210,11 @@ function goDetail(id) {
 
       <!-- 보조 위젯: 대기질/불쾌지수/일출일몰 (가로 배치) -->
       <section v-if="active?.current" class="widget-rail">
-        <AirQualityCard v-if="active.airQuality" :aqi="active.airQuality.aqi" :components="active.airQuality.components" />
+        <AirQualityCard
+          v-if="active.airQuality"
+          :aqi="active.airQuality.aqi"
+          :components="active.airQuality.components"
+        />
         <DiscomfortCard :temp="active.current.temp" :humidity="active.current.humidity" />
         <DaylightBar :sunrise="active.current.sunrise" :sunset="active.current.sunset" />
       </section>
@@ -188,7 +223,9 @@ function goDetail(id) {
     <!-- 오늘 시간별 기온 -->
     <section v-if="hourly.length" class="hourly-section glass-card">
       <div class="section-title">오늘 시간별 기온</div>
-      <p class="hourly-caption text-muted">3시간 간격 예보를 기반으로 1시간 단위로 추정한 값이에요</p>
+      <p class="hourly-caption text-muted">
+        3시간 간격 예보를 기반으로 1시간 단위로 추정한 값이에요
+      </p>
       <div class="hourly-row">
         <div v-for="(h, idx) in hourly" :key="h.time" class="hour-pill" :class="{ now: idx === 0 }">
           <span class="hour-label">
@@ -350,10 +387,10 @@ function goDetail(id) {
   text-align: left;
 }
 .switcher-option:hover {
-  background: rgba(52, 120, 246, 0.1);
+  background: rgba(21, 145, 220, 0.1);
 }
 .switcher-option.active {
-  background: rgba(52, 120, 246, 0.14);
+  background: rgba(21, 145, 220, 0.14);
   color: var(--color-primary);
 }
 .switcher-temp {
@@ -405,7 +442,7 @@ function goDetail(id) {
 
 /* 이 화면의 카드들은 컬러 배경(app-body) 위에 놓이므로 반투명 유리 느낌으로 오버라이드 */
 .home-page :deep(.glass-card) {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255);
   backdrop-filter: var(--blur-glass);
   -webkit-backdrop-filter: var(--blur-glass);
   border-color: rgba(255, 255, 255, 0.45);
