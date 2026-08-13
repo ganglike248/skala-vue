@@ -2,7 +2,7 @@
 import { Star } from '@lucide/vue'
 import { useFavoriteStore } from '@/stores/favoriteStore'
 
-const props = defineProps({
+defineProps({
   cityId: { type: String, required: true },
 })
 const favoriteStore = useFavoriteStore()
