@@ -1,43 +1,79 @@
 /* ===========================================================
-   날씨 사이트 디자인 시스템
-   - 라이트/다크 토큰, 글래스모피즘 카드, 날씨별 그라디언트,
-     스켈레톤 로딩, 배지/칩 등 화면 전반에서 재사용하는 유틸리티
+   SKALA 날씨 · 데스크톱 대시보드 디자인 시스템
+   - 참고 무드보드(iOS 날씨 앱 스크린샷 3장)의 하늘색 그라디언트 히어로,
+     화이트 라운드 카드, 컬러풀 그라디언트 미터, 세그먼트 탭, 리스트 로우를
+     PC 와이드 레이아웃(좌측 사이드바 + 대시보드 그리드)에 맞게 재구성
    =========================================================== */
 
+@import url('https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css');
+
 :root {
-  --color-bg: #eef2fb;
-  --color-bg-alt: #e4ebfb;
-  --color-surface: rgba(255, 255, 255, 0.72);
+  --color-bg: #eef3fc;
+  --color-bg-alt: #e4ecfb;
+  --color-surface: rgba(255, 255, 255, 0.86);
   --color-surface-solid: #ffffff;
-  --color-text: #10192b;
-  --color-text-muted: #5b6478;
-  --color-border: rgba(15, 23, 42, 0.08);
-  --color-primary: #4fb3ff;
-  --color-primary-2: #5c9dff;
-  --color-accent: #ff8a65;
-  --shadow-soft: 0 10px 40px rgba(31, 41, 71, 0.08);
-  --shadow-strong: 0 20px 60px rgba(31, 41, 71, 0.16);
-  --radius-lg: 28px;
+  --color-surface-alt: #f4f7fd;
+  --color-text: #0f1b2d;
+  --color-text-muted: #66738c;
+  --color-border: rgba(16, 30, 54, 0.08);
+  --color-primary: #3478f6;
+  --color-primary-2: #62a6ff;
+  --color-accent: #ff9a3d;
+
+  --sky-1: #7fc7ff;
+  --sky-2: #3d84f5;
+  --sky-3: #6a7bff;
+
+  --shadow-soft: 0 10px 34px rgba(20, 34, 64, 0.08);
+  --shadow-strong: 0 24px 64px rgba(20, 34, 64, 0.18);
+  --shadow-pop: 0 14px 40px rgba(52, 120, 246, 0.28);
+
+  --radius-xl: 30px;
+  --radius-lg: 24px;
   --radius-md: 18px;
-  --radius-sm: 12px;
-  --blur-glass: blur(24px);
+  --radius-sm: 13px;
+  --blur-glass: blur(20px);
+
+  --sidebar-w: 92px;
+
+  /* 대기질/불쾌지수 등에 쓰는 무지개 그라디언트 미터 (스크린샷 AQI 슬라이더 참고) */
+  --meter-rainbow: linear-gradient(
+    90deg,
+    #34d399 0%,
+    #a3e635 24%,
+    #fbbf24 48%,
+    #fb923c 68%,
+    #f43f5e 86%,
+    #a855f7 100%
+  );
 }
 
 html.dark {
-  --color-bg: #060a16;
-  --color-bg-alt: #0b1120;
-  --color-surface: rgba(24, 32, 53, 0.6);
+  --color-bg: #060a15;
+  --color-bg-alt: #0a0f1e;
+  --color-surface: rgba(20, 28, 48, 0.68);
   --color-surface-solid: #131b2e;
+  --color-surface-alt: #17203660;
   --color-text: #eef2fb;
   --color-text-muted: #93a0bd;
-  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border: rgba(255, 255, 255, 0.09);
   --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.45);
   --shadow-strong: 0 25px 70px rgba(0, 0, 0, 0.55);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-text);
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   transition:
     background-color 0.4s ease,
     color 0.4s ease;
@@ -49,15 +85,13 @@ body {
 
 /* ---------- 공용 레이아웃/카드 ---------- */
 .page {
-  max-width: 1080px;
+  max-width: 1360px;
   margin: 0 auto;
-  padding: 24px clamp(16px, 4vw, 32px) 64px;
+  padding: 0 clamp(20px, 3vw, 40px) 64px;
 }
 
 .glass-card {
-  background: var(--color-surface);
-  backdrop-filter: var(--blur-glass);
-  -webkit-backdrop-filter: var(--blur-glass);
+  background: var(--color-surface-solid);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
@@ -68,9 +102,10 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--color-text);
   margin-bottom: 14px;
+  letter-spacing: -0.01em;
 }
 
 .text-muted {
@@ -82,25 +117,66 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 7px 15px;
   border-radius: 999px;
   font-size: 0.8rem;
-  font-weight: 600;
-  background: rgba(79, 124, 255, 0.12);
+  font-weight: 700;
+  background: rgba(52, 120, 246, 0.1);
   color: var(--color-primary);
   border: none;
   cursor: pointer;
   transition:
     transform 0.15s ease,
-    background-color 0.15s ease;
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
   white-space: nowrap;
 }
 .chip:hover {
   transform: translateY(-1px);
 }
 .chip.active {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  background: linear-gradient(135deg, var(--color-primary), var(--sky-3));
   color: #fff;
+  box-shadow: var(--shadow-pop);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* ---------- 세그먼트 탭 (시간별/일별/14일) ---------- */
+.segmented {
+  display: inline-flex;
+  padding: 5px;
+  gap: 4px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+}
+.segmented-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 9px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.segmented-btn.active {
+  background: var(--color-surface-solid);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-soft);
 }
 
 /* ---------- 버튼 ---------- */
@@ -111,15 +187,18 @@ body {
   padding: 10px 18px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-surface-solid);
   color: var(--color-text);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .btn-glass:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-primary {
@@ -130,12 +209,12 @@ body {
   padding: 12px 20px;
   border-radius: var(--radius-sm);
   border: none;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-2));
+  background: linear-gradient(135deg, var(--color-primary), var(--sky-3));
   color: #fff;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.9rem;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(79, 124, 255, 0.35);
+  box-shadow: var(--shadow-pop);
   transition: transform 0.15s ease;
 }
 .btn-primary:hover {
@@ -149,25 +228,69 @@ body {
 
 /* ---------- 날씨 조건별 그라디언트 (히어로/배경용) ---------- */
 .weather-gradient-clear-day {
-  background: linear-gradient(160deg, #6dd5fa 0%, #4f7cff 100%);
+  background: linear-gradient(150deg, #86d2ff 0%, #4a8fff 48%, #6a6bff 100%);
 }
 .weather-gradient-clear-night {
-  background: linear-gradient(160deg, #0f2027 0%, #203a43 55%, #2c5364 100%);
+  background: linear-gradient(150deg, #0f2027 0%, #203a43 55%, #2c5364 100%);
 }
 .weather-gradient-clouds {
-  background: linear-gradient(160deg, #8e9eab 0%, #4b6584 100%);
+  background: linear-gradient(150deg, #9fb1c9 0%, #57708f 55%, #3f5470 100%);
 }
 .weather-gradient-rain {
-  background: linear-gradient(160deg, #3a6073 0%, #16222a 100%);
+  background: linear-gradient(150deg, #4a6a82 0%, #263849 55%, #131d28 100%);
 }
 .weather-gradient-thunder {
-  background: linear-gradient(160deg, #29323c 0%, #485563 100%);
+  background: linear-gradient(150deg, #3c4652 0%, #232b34 60%, #12161c 100%);
 }
 .weather-gradient-snow {
-  background: linear-gradient(160deg, #83a4d4 0%, #b6fbff 100%);
+  background: linear-gradient(150deg, #9fc4ec 0%, #cdeaf5 55%, #eaf6ff 100%);
 }
 .weather-gradient-fog {
-  background: linear-gradient(160deg, #757f9a 0%, #d7dde8 100%);
+  background: linear-gradient(150deg, #8b96a8 0%, #b8c2d2 55%, #dbe2ec 100%);
+}
+
+/* ---------- 그라디언트 미터 (대기질/불쾌지수/기온) ---------- */
+.meter-track {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--meter-rainbow);
+  overflow: visible;
+}
+.meter-thumb {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--color-primary);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: left 0.4s ease;
+}
+
+/* ---------- 리스트 로우 (일별 예보 등) ---------- */
+.list-row {
+  display: grid;
+  grid-template-columns: 96px 40px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 8px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+.list-row:hover {
+  background: rgba(52, 120, 246, 0.07);
+}
+.list-row + .list-row {
+  border-top: 1px solid var(--color-border);
 }
 
 /* ---------- 스켈레톤 로딩 ---------- */
@@ -205,6 +328,18 @@ body {
   animation: icon-float 3.5s ease-in-out infinite;
 }
 
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+
 /* 스크롤바를 살짝 다듬어서 전체 톤에 맞춤 */
 ::-webkit-scrollbar {
   width: 10px;
@@ -213,4 +348,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: 999px;
+}
+.hscroll {
+  scrollbar-width: thin;
 }

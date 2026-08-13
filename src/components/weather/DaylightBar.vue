@@ -29,8 +29,13 @@ const remainingLabel = computed(() => {
 
 <template>
   <div class="daylight-card glass-card">
-    <div class="section-title"><Sunrise :size="18" />오늘의 햇빛</div>
-    <p class="remaining text-muted">{{ remainingLabel }}</p>
+    <div class="card-head">
+      <span class="card-icon"><Sunrise :size="16" /></span>
+      <div>
+        <p class="card-title">오늘의 햇빛</p>
+        <p class="remaining">{{ remainingLabel }}</p>
+      </div>
+    </div>
     <div class="track">
       <div class="track-fill" :style="{ width: progress + '%' }" />
       <div class="track-dot" :style="{ left: `calc(${progress}% - 7px)` }" />
@@ -45,10 +50,34 @@ const remainingLabel = computed(() => {
 <style scoped>
 .daylight-card {
   padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  color: var(--color-accent);
+  background: rgba(255, 154, 61, 0.14);
+  flex-shrink: 0;
+}
+.card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
 }
 .remaining {
-  font-size: 0.82rem;
-  margin-bottom: 14px;
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 .track {
   position: relative;
@@ -56,7 +85,6 @@ const remainingLabel = computed(() => {
   border-radius: 999px;
   background: linear-gradient(90deg, #cde2fb, #f5a623 45%, #ff7a59 100%);
   opacity: 0.85;
-  margin-bottom: 10px;
 }
 .track-fill {
   position: absolute;

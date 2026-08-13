@@ -37,7 +37,7 @@ const features = [
 
 <style scoped>
 .about-page {
-  padding-top: 28px;
+  padding-top: 6px;
   display: flex;
   justify-content: center;
 }

@@ -89,7 +89,7 @@ function goDetail(id) {
 
 <style scoped>
 .stats-page {
-  padding-top: 28px;
+  padding-top: 6px;
   display: flex;
   flex-direction: column;
   gap: 18px;

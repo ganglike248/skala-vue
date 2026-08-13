@@ -29,6 +29,12 @@ const routes = [
     component: () => import('../views/WeatherStatsView.vue'),
   },
   {
+    // 지도 위 핀으로 주요 도시 날씨를 한눈에 보는 화면
+    path: '/map',
+    name: 'map',
+    component: () => import('../views/WeatherMapView.vue'),
+  },
+  {
     // 위 라우트와 매칭되지 않는 모든 경로를 404 페이지로 (Catch-all Route)
     path: '/:pathMatch(.*)*',
     name: 'NotFound',

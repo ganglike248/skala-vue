@@ -39,6 +39,7 @@ function handleRemove(cityId) {
     <div class="section-title">
       <Building2 :size="20" />
       지역별 날씨
+      <span class="count-badge">{{ weatherStore.allCities.length }}개 도시</span>
     </div>
     <p class="text-muted intro">6개 주요 도시를 기본으로 보여드려요. 검색해서 원하는 도시를 자유롭게 추가해보세요.</p>
 
@@ -70,10 +71,19 @@ function handleRemove(cityId) {
 
 <style scoped>
 .regions-page {
-  padding-top: 28px;
+  padding-top: 6px;
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+.count-badge {
+  margin-left: 4px;
+  padding: 3px 11px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: rgba(52, 120, 246, 0.1);
 }
 .intro {
   margin-top: -10px;
@@ -85,8 +95,8 @@ function handleRemove(cityId) {
 }
 .city-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 18px;
 }
 .empty-message {
   text-align: center;

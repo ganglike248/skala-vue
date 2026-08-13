@@ -69,12 +69,14 @@ function normalizeForecast(list) {
       const temps = items.map((item) => item.main.temp)
       // 정오에 가까운 항목을 그날의 대표 날씨로 사용 (없으면 첫 항목)
       const noonItem = items.find((item) => item.dt_txt.includes('12:00:00')) ?? items[0]
+      const pops = items.map((item) => item.pop ?? 0)
       return {
         date,
         min: Math.round(Math.min(...temps)),
         max: Math.round(Math.max(...temps)),
         iconCode: noonItem.weather[0].icon,
         description: noonItem.weather[0].description,
+        pop: Math.round(Math.max(...pops) * 100),
       }
     })
 

@@ -19,7 +19,7 @@ const goHome = () => router.push('/')
 
 <style scoped>
 .not-found-page {
-  padding-top: 60px;
+  padding-top: 40px;
   display: flex;
   justify-content: center;
 }
