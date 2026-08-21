@@ -18,7 +18,7 @@ import {
   ChevronRight,
 } from '@lucide/vue'
 import { useStorage } from '@vueuse/core'
-import UnitToggler from './components/exercise/UnitToggler.vue'
+import UnitToggler from './components/weather/UnitToggler.vue'
 import WeatherParticles from './components/weather/WeatherParticles.vue'
 import { useWeatherStore } from '@/stores/weatherStore'
 import { useConfigStore } from '@/stores/configStore'
