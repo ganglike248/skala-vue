@@ -1,491 +1,205 @@
-# skala-vue
+# SKALA Weather Dashboard
 
-SK SKALA 4기 Vue 실습 코드 - U123 손경락
+브라우저 Geolocation으로 내 위치 날씨를 즉시 보여주고, OpenWeatherMap API 4종(현재 날씨 · 5일 예보 · 대기질 · 지오코딩)을 조합해 시간별/일별 예보, 대기질, 지도, 통계까지 하나의 대시보드로 묶은 개인 프로젝트입니다.
 
----
+**[🔗 배포 사이트 바로가기](https://skala-vue-smoky.vercel.app/)**
 
-# day4 최종 과제 정리
-
-## OpenWeatherAPI 연결
-
-<img src="src/assets/snapShots/image6-1.png" alt="API 연결 확인" width="400" /><br>
-<br>
-API 연결 확인<br>
-
-## 날씨 대시보드 사이트
-
-- 배포된 사이트 URL: <https://skala-vue-smoky.vercel.app/>
-
-<img src="src/assets/snapShots/image6-2.png" alt="홈화면1" width="400" /><br>
-홈화면1<br>
-<img src="src/assets/snapShots/image6-3.png" alt="홈화면2" width="400" /><br>
-홈화면2<br>
-<img src="src/assets/snapShots/image6-4.png" alt="홈화면3" width="400" /><br>
-홈화면3<br>
-<img src="src/assets/snapShots/image6-5.png" alt="홈화면4" width="400" /><br>
-홈화면4<br>
-<img src="src/assets/snapShots/image6-14.png" alt="섭씨 화씨 변경" width="400" /><br>
-섭씨 화씨 변경<br>
-<img src="src/assets/snapShots/image6-6.png" alt="예보 상세 화면(시간별 예보)" width="400" /><br>
-예보 상세 화면(시간별 예보)<br>
-<img src="src/assets/snapShots/image6-7.png" alt="예보 상세 화면(일별 예보)" width="400" /><br>
-예보 상세 화면(일별 예보)<br>
-<img src="src/assets/snapShots/image6-8.png" alt="지역 목록 화면" width="400" /><br>
-지역 목록 화면<br>
-<img src="src/assets/snapShots/image6-9.png" alt="지역 즐겨찾기 등록" width="400" /><br>
-지역 즐겨찾기 등록<br>
-<img src="src/assets/snapShots/image6-10.png" alt="지도 화면1" width="400" /><br>
-지도 화면1<br>
-<img src="src/assets/snapShots/image6-11.png" alt="지도 화면2" width="400" /><br>
-지도 화면2<br>
-<img src="src/assets/snapShots/image6-12.png" alt="날씨 통계 화면" width="400" /><br>
-날씨 통계 화면<br>
-<img src="src/assets/snapShots/image6-13.png" alt="사이트 정보 소개 화면" width="400" /><br>
-사이트 정보 소개 화면<br>
-
-- 배포된 사이트 URL: <https://skala-vue-smoky.vercel.app/>
-- 브라우저 Geolocation API로 내 위치를 자동 인식해 홈 화면에 실시간 날씨를 바로 표시, 위치 권한이 없으면 기본 지역으로 대체
-- 6개 주요 도시를 기본 제공하고, 검색으로 원하는 도시를 자유롭게 추가·삭제하고 즐겨찾기로 관리
-- 시간별(1시간 단위로 추정)·일별(5일) 예보를 `ApexCharts` 애니메이션 차트로 시각화
-- 대기질(미세먼지/초미세먼지/이산화질소), 일출·일몰, 체감 불쾌지수까지 한 화면에서 확인
-- `Leaflet` 지도 위에 핀을 찍어 여러 도시의 날씨를 한눈에 비교
-- 날씨 상태·시간대에 맞춰 배경 사진과 파티클(비/눈 등) 연출이 자동으로 전환
-- 기술 스택: Vue 3(Composition API) · Vite · Pinia · Vue Router · `axios` · OpenWeatherMap API(현재 날씨/5일 예보/대기질/지오코딩) · `ApexCharts` · `Leaflet` · `lucide-vue` 아이콘 · `VueUse`(geolocation, dark mode, storage) · 자체 CSS 디자인 시스템
-
-# day3 과제 정리
-
-## 컴포넌트 분리 (WeatherParent 외 5개)
-
-<img src="src/assets/snapShots/image3-1.png" alt="컴포넌트로 분리된 화면" width="400" /><br>
-컴포넌트로 분리된 화면<br>
-
-- Mockup에서 만든 기능은 그대로 유지하면서 화면을 6개 컴포넌트로 분리
-- `WeatherParent.vue`: 도시 데이터, 검색어, 선택 상태 등 전체 데이터를 관리
-- `BaseDashboardCard.vue`: 검색박스/리스트박스에 공통으로 쓰는 카드 스타일
-- `TipBanner.vue`: 안내 배너, 닫기 상태를 자체적으로 관리
-- `SearchBar.vue`: 도시 검색창, 입력하면 검색어를 부모에게 전달하고 Enter 치면 검색 완료 신호도 전달
-- `WeatherCard.vue`: 카드 한 장, 이모지·기온 뱃지·테두리 색·지역코드를 표시하고, 클릭하면 선택 신호를, 상세보기를 누르면 상세보기 신호를 부모에게 전달
-- `StatusBar.vue`: 상단 상태바 문구만 표시
-
-## Vue Router 적용
-
-<img src="src/assets/snapShots/image4-1.png" alt="라우터가 적용된 화면" width="400" /><br>
-라우터가 적용된 화면<br>
-<img src="src/assets/snapShots/image4-2.png" alt="서비스 소개 화면" width="400" /><br>
-서비스 소개 화면<br>
-<img src="src/assets/snapShots/image4-3.png" alt="별도로 추가한 날씨 통계 화면" width="400" /><br>
-별도로 추가한 날씨 통계 화면<br>
-<img src="src/assets/snapShots/image4-4.png" alt="특정 도시 상세 내용" width="400" /><br>
-특정 도시 상세 내용<br>
-<img src="src/assets/snapShots/image4-5.png" alt="라우팅 되지 않은 NotFound 화면" width="400" /><br>
-라우팅 되지 않은 NotFound 화면<br>
-
-- 모든 페이지를 지연 로딩(필요할 때만 불러오기)으로 설정하고, 정의되지 않은 경로는 전부 404 페이지로 연결
-- `/` 날씨 대시보드, `/about` 서비스 소개, `/weather/도시코드` 도시별 상세 페이지, `/stats` 날씨 통계(추가로 만든 페이지)
-- `WeatherHomeView.vue`: 상세보기를 누르면 알림창 대신 상세 페이지로 이동
-- `WeatherDetailView.vue`: 도시 코드로 데이터를 찾아 지역명/기온/상태/습도/풍속 표시
-- `WeatherAboutView.vue`: 서비스 소개 문구 + 대시보드로 돌아가기 버튼
-- `WeatherStatsView.vue`: 등록 도시 수, 평균 기온, 가장 덥고 추운 도시를 보여주는 통계 페이지
-- `NotFoundView.vue`: 잘못된 경로로 들어오면 안내 문구 + 날씨 메인으로 이동 버튼
-- 네비게이션 바에 "📊 날씨 통계" 링크 추가
-
-## Pinia Store 적용
-
-<img src="src/assets/snapShots/image5-1.png" alt="섭씨를 화씨로 변경한 화면" width="400" /><br>
-섭씨를 화씨로 변경한 화면<br>
-<img src="src/assets/snapShots/image5-2.png" alt="별도로 추가한 즐겨찾기 기능1" width="400" /><br>
-별도로 추가한 즐겨찾기 기능1<br>
-<img src="src/assets/snapShots/image5-3.png" alt="별도로 추가한 즐겨찾기 기능2" width="400" /><br>
-별도로 추가한 즐겨찾기 기능2<br>
-<img src="src/assets/snapShots/image5-4.png" alt="별도로 추가한 풍속 단위 변경1" width="400" /><br>
-별도로 추가한 풍속 단위 변경1<br>
-<img src="src/assets/snapShots/image5-5.png" alt="별도로 추가한 풍속 단위 변경2" width="400" /><br>
-별도로 추가한 풍속 단위 변경2<br>
-
-- 요구사항대로 `configStore.js`로 섭씨/화씨 단위를 전역 관리, 메인/상세 화면에 적용
-- `favoriteStore.js` — 즐겨찾는 도시를 저장/토글하는 스토어를 새로 만들고, 카드에 ⭐ 버튼과 "즐겨찾기만 보기" 체크박스로 활용
-- `configStore.js`에 `windSpeedUnit`/`windSpeedSymbol`/`toggleWindSpeedUnit` 추가 — 상세 페이지 풍속(m/s ↔ mph)을 기온과 별개로 토글
+`Vue 3 (Composition API)` · `Vite` · `Pinia` · `Vue Router` · `Axios` · `OpenWeatherMap API` · `ApexCharts` · `Leaflet` · `VueUse` · `@lucide/vue`
 
 ---
 
-# day2 과제 정리
+## 목차
 
-## WeatherMockup.vue 커스터마이징
-
-<img src="src/assets/snapShots/image1-1.png" alt="Mockup 실행 화면" width="400" /><br>
-Mockup 실행 화면<br>
-<img src="src/assets/snapShots/image1-2.png" alt="상세 정보" width="400" /><br>
-상세 정보<br>
-<img src="src/assets/snapShots/image1-3.png" alt="alert" width="400" /><br>
-alert<br>
-
-- 데이터: 제주, 대전, 광주 데이터 추가 + humidity(습도), dust(미세먼지) 필드 추가
-- 검색: `:value` + `@input`으로 구현, `@keyup.enter`로 검색 결과 건수를 상태바에 표시
-- 카드 클릭: 상태바 갱신뿐 아니라 `expandedId`로 카드별 상세 패널 토글, 다시 클릭해 닫으면 상태바도 기본 문구로 복원
-- 날씨 상태(맑음/비/구름)별 이모지 표시 (`weatherEmojiMap`)
-- 기온 뱃지: 기존의 `v-if`/`v-else` 2단계(더움/선선함)를 → `v-if`/`v-else-if`/`v-else` 3단계(더움/적당함/추움)로 확장
-- 카드에 지역코드 `item.id` 추가
-- 카드 왼쪽 테두리 색을 기온에 따라 `:style` 바인딩으로 동적 변경
-- 카드 안 상세정보 패널에 습도/미세먼지 표시
-- alert에 현재 기온 추가 및 안내 문구 변경
-- 안내 배너 추가: `v-show`로 노출 제어, 닫기 버튼에 `@click.once`로 최초 1회만 동작하도록 처리
-- 검색 결과가 없을 때 안내 문구 추가
-- `<style scoped>`로 개별 스타일 적용
-
-## WeatherComposition.vue 커스터마이징
-
-<img src="src/assets/snapShots/image2-1.png" alt="Mockup 실행 화면" width="400" /><br>
-Mockup 실행 화면<br>
-<img src="src/assets/snapShots/image2-2.png" alt="검색 필터링" width="400" /><br>
-검색 필터링<br>
-<img src="src/assets/snapShots/image2-3.png" alt="지역 선택" width="400" /><br>
-지역 선택<br>
-<img src="src/assets/snapShots/image2-4.png" alt="deep watch로 내부 하나만 변경" width="400" /><br>
-deep watch로 내부 하나만 변경<br>
-
-- Mockup에서 만든 기능에서 이어감
-- 데이터: Mockup과 동일
-- 검색 필터링은 Mockup의 함수 대신 `filteredWeatherList` computed로 구현
-- `averageTemp` computed 추가: `filteredWeatherList`의 2차 계산된 속성으로, 검색 결과 도시들의 평균 기온을 실시간 계산
-- `tempChangeLog` 반응형 상태 변수 추가: 기온 변경이 감지된 시각을 화면에 표시하기 위한 로그용 ref
-- `weatherList`에 `{ deep: true }` watch 추가: 배열 자체가 아니라 배열 안 객체(city)의 기온 값이 바뀌는 것까지 감지
-- `randomizeTemp()` 함수 + 버튼 추가: 무작위 도시의 기온을 바꿔 위 deep watch를 실제로 발동시켜보는 트리거
-- 콘솔 로그만 남기던 기존 watch/watchEffect와 달리, 화면에도 모니터링 섹션으로 결과를 노출
+1. [스크린샷](#스크린샷)
+2. [설계 하이라이트](#설계-하이라이트)
+3. [사용 API](#사용-api)
+4. [기술 스택과 선택 이유](#기술-스택과-선택-이유)
+5. [폴더 구조](#폴더-구조)
+6. [로컬 실행](#로컬-실행)
 
 ---
 
-# 배운 것 정리
+## 스크린샷
 
-# day1
+### 홈 — 내 위치 실시간 날씨
 
-## 파일 구조
+<img src="src/assets/snapShots/image6-2.png" alt="홈화면1" width="400" />
+<img src="src/assets/snapShots/image6-3.png" alt="홈화면2" width="400" />
+<img src="src/assets/snapShots/image6-4.png" alt="홈화면3" width="400" />
+<img src="src/assets/snapShots/image6-5.png" alt="홈화면4" width="400" />
+<img src="src/assets/snapShots/image6-14.png" alt="섭씨/화씨 단위 전환" width="400" />
 
-- index.html: 앱 진입점, 브라우저가 최초로 읽는 단 하나의 HTML
-- main.js: 뷰 어플리케이션을 초기화하고 구성하는 역할
-- App.vue: 루트 컴포넌트
-  - HelloWorld처럼 PascalCase로 작성
+### 예보 상세 — 시간별 / 일별
 
-## 뷰의 3단 구조(SFC)
+<img src="src/assets/snapShots/image6-6.png" alt="시간별 예보 (ApexCharts)" width="400" />
+<img src="src/assets/snapShots/image6-7.png" alt="일별 예보 (ApexCharts)" width="400" />
 
-- script setup
-- template
-- style
+### 지역 목록 & 즐겨찾기
 
-## 반응형 데이터
+<img src="src/assets/snapShots/image6-8.png" alt="지역 목록 화면" width="400" />
+<img src="src/assets/snapShots/image6-9.png" alt="지역 즐겨찾기 등록" width="400" />
 
-- 그냥 선언한 변수는 화면이 새로고침 되어야만 반영됨
-- ref(): 반응형 변수, 값이 바뀌면 바로 반영됨
-- 버튼을 누르면 화면을 새로 고침함 -> 일반 변수(ref로 감싸지 않은 변수)도 같이 반영
+### 지도 — Leaflet 기반 다지역 비교
 
-## Vue Directive
+<img src="src/assets/snapShots/image6-10.png" alt="지도 화면1" width="400" />
+<img src="src/assets/snapShots/image6-11.png" alt="지도 화면2" width="400" />
 
-- 'v-'접두사가 붙은 특수한 HTML 속성
-- v-bind: Elements의 Attributes에 표현식(변수, 함수, 객체 등)을 동적 바인딩(:)
-- v-model: 폼 입력'input'과 vue 인스턴스 데이터 간에 양방향 데이터 바인딩(인풋 값 할당)
-- v-on: 클릭 또는 키 입력과 같은 사용자 이벤트에 응답하고자 지정 메서드 실행(@)
+### 통계 · 소개
 
-### v-bind
+<img src="src/assets/snapShots/image6-12.png" alt="날씨 통계 화면" width="400" />
+<img src="src/assets/snapShots/image6-13.png" alt="사이트 정보 소개 화면" width="400" />
 
-- HTML 태그 내부의 Attribute에 js 값을 동적으로 연결(binding)하는 지시자
-- 실무에서는 앞에 콜론(:) 기호만 남김
-- :href="URL"처럼 변수를 사용함(URL은 변수)
-- class 바인딩
-  - 값의 true/false에 따라 적용되는 스타일이 다름
+---
 
-### v-for, if
+## 설계 하이라이트
 
-- 일반적인 사용법 동일
+### 1. Pinia 스토어 4개 — 도메인별 분리
 
-### v-show
+| Store           | 책임                          | 영속화               |
+| ---------------- | ------------------------------ | ---------------------- |
+| `weatherStore`   | 도시별 API 캐시 · 검색 · 정규화 | 커스텀 도시만 `localStorage` |
+| `selectionStore` | 화면 간 공유되는 선택 지역     | `localStorage`         |
+| `favoriteStore`  | 즐겨찾기 도시 id               | 메모리                 |
+| `configStore`    | 온도/풍속 단위 설정            | 메모리                 |
 
-- v-show가 붙은 해당 태그를 보여줄지 말지 결정
+- 서버 캐시(`weatherStore`)와 클라이언트 상태를 분리 → 도메인 간 영향 없이 독립 테스트/교체 가능
+- 영속화가 필요한 상태만 VueUse `useStorage`로 감싸 새로고침 후에도 유지
 
-# day2
+### 2. `weatherStore` — 정규화 캐시
 
-### v-pre
+`entries`(도시 id → `{ current, forecast, airQuality, isLoading*, error }`)를 `reactive`로 관리, 화면이 필요한 만큼만 요청.
 
-- 아무런 연산(해석)없이 그대로 출력
+- `fetchCurrent(id)` — 카드 그리드용 현재 날씨 1건
+- `fetchDetail(id)` — 상세 페이지용 3개 API `Promise.all` 병렬 조회, 캐시 히트 시 재요청 안 함
+- `normalizeCurrent`/`normalizeForecast`/`normalizeAirQuality` 순수 함수로 API 응답 → 뷰 모델 변환 계층 분리
 
-### v-cloak
+```js
+async function fetchDetail(id) {
+  const entry = entries[id]
+  if (entry.current && entry.forecast && entry.airQuality) return // 캐시 히트
+  const [currentRes, forecastRes, airRes] = await Promise.all([
+    axios.get(`${BASE_WEATHER_URL}/weather`, { params }),
+    axios.get(`${BASE_WEATHER_URL}/forecast`, { params }),
+    axios.get(`${BASE_WEATHER_URL}/air_pollution`, { params: airParams }),
+  ])
+  entry.current = normalizeCurrent(currentRes.data)
+  entry.forecast = normalizeForecast(forecastRes.data.list)
+  entry.airQuality = normalizeAirQuality(airRes.data)
+}
+```
 
-- vue가 로딩되기 전까지 해당 구역을 물리적으로 숨김
+### 3. 시간별 예보 보간
 
-### v-once
+무료 플랜은 3시간 간격 예보만 제공 → `buildHourlySeries`가 인접 3시간 지점(anchor) 사이를 선형 보간해 1시간 단위 24시간 스트립 생성. 보간 무의미한 값(날씨 상태 등)은 직전 실측값 유지 + `estimated` 플래그로 구분.
 
-- 해당 요소와 하위 요소는 최초에 한 번만 반응형으로 렌더링
-- 데이터가 변경되어도 DOM 갱신 X
+### 4. 라우팅
 
-### v-memo
+- 전 라우트 동적 import로 지연 로딩
+- `/weather/:cityId` 동적 세그먼트 + `/:pathMatch(.*)*` catch-all 404
+- `scrollBehavior`로 전환 시 스크롤 최상단 초기화
+- "예보" 탭은 `selectionStore.selectedCityId` 참조 → 항상 현재 선택 지역으로 이동
 
-- 지정한 조건(변수)이 바뀔 때만 태그 내부 업대이트
-- 아니면 이전에 그린 화면(캐시) 그대로 재사용
+### 5. 날씨 반응형 테마 엔진
 
-### v-on
+`weatherIconMap.js`가 아이콘 코드를 배경 사진·오버레이·파티클로 매핑하는 순수 함수 체인:
 
-- DOM 요소에 이벤트 리스너 연결
-- 주로 사용자 입력(클릭, 키보드 입력 등)에 반응
-  - click: 클릭 이벤트
-  - input: 입력 필드 변경 시
-  - change: 입력 값 변경 후 포커스 아웃 시
-- 이벤트 핸들링
-  - Inline Handler
-    - 태그 안에서 즉시 간단한 js 연산 처리 시 사용(숫자 증감, 스위치 토글 등)
-  - Method Handler
-    - 복잡한 로직은 script setup에 함수를 만들어서 호출
+```text
+iconCode('10n') → resolveGradientClass() → 'weather-gradient-rain'
+                → HERO_PHOTOS[...] (배경 사진)
+                → resolveParticleType() → 'rain' (파티클 타입)
+```
 
-### 이벤트 객체
+낮/밤 접미사(d/n)까지 구분해 같은 '맑음'도 낮엔 sparkle, 밤엔 stars. `App.vue`(홈 배경)와 `WeatherDetailView.vue`(히어로 카드)가 동일 매핑 재사용.
 
-- e.type: String(발생한 이벤트의 종류. click, keyup, submit 등)
-- e.preventDefault(): 브라우저가 특정 태그에 대해 가지는 기본 고유 동작을 강제로 중단 시킴
-  - a 태그 눌렀을 때, 페이지가 링크로 이동하는 것 방지
-  - form 태그의 submit 버튼을 눌렀을 때 새로 고침 방지
-- `@click="handleEvent"` -> `const handleEvent = (e) => {}`
-- `@click="handleEvent('홍길동', $event)"`
+### 6. Geolocation 부트스트랩
 
-### 이벤트 수식어(Event Modifier)
+`App.vue` 최상단에서 1회만 구동해 `entries.me`를 채움. 권한 거부/6초 타임아웃 시 서울로 자동 폴백, 재시도 버튼 제공.
 
-- 이벤트 리스터의 기본 동작을 보완하거나 제어하는 데 사용되는 특수 접미어
-  - .prevent: 태그의 기본 동작 방지(폼 제출 시 새로고침 방지, 링크 이동 방지)
-  - .stop: 이벤트 버블링 차단(자식 버튼 클릭 시 부모 박스 이벤트로 전염 방지)
-  - .once: 이벤트를 딱 한 번만 실행(설문 조사 제출 버튼 중복 클릭 방지)
-  - .self: 오직 자기 자신을 직접 클릭했을 때만 이벤트 실행(자식 태그 클릭 시 패스)
+### 7. 코드 품질
 
-## Composition API
-
-### ref()
-
-- 모든 값을 반응형 상태로 만든다
-- 상단에 import해야 함
-- 스크립트에서는 .value로 접근, 템플릿에서는 바로 접근
-
-### reactive()
-
-- 참조 자료형(객체, 배열, Map, Set)데이터를 반응형 상태로 만듦
-- 반응성 단절
-  - 반응형 객체를 교체하거나, 구조를 분해해야 할당하면 반응성 연결이 끊어짐
-
-### computed()
-
-- 원본 데이터가 바뀔 때만 알아서 다시 계산되는 계산기
-- 일반 함수는 화면 재렌더링 될 때마다 다시 실행
-  - 데이터가 바뀌지 않으면 기존 데이터 사용
-
-### watch()
-
-- 반응형 데이터의 값이 변경되었을 때 수행
-- 첫 번째 인자로 감시할 데이터, 두 번째 인자(새로운 값, 이전 값)로 변경 시 콜백 함수 지정
-- deep watch
-  - 주소값까지 감시(객체를 감시할 때, 주소를 보고 있어서 값이 바뀌어도 모름)
-  - {deep:true}을 3번째 파라미터로 사용
-  - oldValue는 더이상 추적 불가
-- reactive
-  - 배열이나 객체 전체를 보면 이전 값 참조 불가
-  - 특정 속성만 감시하면 이전 값 참조 가능 불가
-
-# day3
-
-## Component
-
-- 표준화된 소프트웨어 모듈(블록/부품)
-- 핵심: 독립성, 교체 가능성
-- 전역 등록
-  - main.js에서 app.component로 선언 하면 각 파일에서 import 없이 사용 가능
-- 내장 함수
-  - Lifecycle Hooks: setup(생성), onMounted(부착), onUpdated(갱신), onUnmounted(소멸)
-  - Component Composition: defineProps, defineEmits
-  - Dependency Injection: provide, inject
-
-### Lifecycle Hook
-
-- setup(): 생성 전(컴포넌트 불러온 후 화면 생성 전). 컴포넌트 생성 전 가장 먼저 실행. reactive 변수 및 함수 초기화
-- onMounted(): 마운트(화면 생성 완료) 완료 후 실행. DOM에 마운트된 후 호출. 초기 DOM 조작, API 호출 등에 사용
-- onUpdated(): 업데이트 후(데이터 변경된 시점). DOM 업데이트가 완료된 후 호출
-- onUnmounted(): 언마운트 완료(이 페이지를 떠날 때). 컴포넌트가 DOM에서 제거된 후 호출
-
-## Props & Emits
-
-- 데이터는 위에서 아래로(props), 신호는 아래에서 위로(Emits)
-  - Props는 자식에서 원본 데이터 수정 불가
-  - Emits를 이용해서 원본 데이터 수정해달라고 요청
-
-### defineProps()
-
-- 자식 컴포넌트에서 부모가 넘겨줄 데이터(속성)의 이름과 규격을 선언
-- Data는 camelCase로, 속성은 kebab-case로 작성
-
-### defineEmits()
-
-- 자식 컴포넌트에서 부모에게 이벤트 전달을 위한 매크로 함수
-- @이벤트타입 = "이벤트핸들러"로 수신
-
-### provide & inject
-
-- props Drilling: props를 쓰지 않는 중간 컴포넌트는 전달자 역할을 해야함
-- inject: 중간 컴포넌트 건너뛰기
-
-## Component Slot
-
-- 자식 컴포넌트의 특정 구역을 비워두고, 동적으로 받아 렌더링 하는 기능
-
-## Router
-
-- 페이지 이동
-  - 전통 웹: 이동 시마다 화면 전체 새로고침
-  - Vue: 최초 한 번만 HTML 파일 하나만 다운(SAP 구조)
-
-### 설정하기
-
-- src/router/index.js
-- '/'를 사용해서 URL 관리
-  - path: URL 경로
-  - component: path에 매핑되는 vue 컴포넌트
-- export default router로 외부 공유
-- 실무에서는 동적 import 더 많이 사용(초기 로딩 속도 확보)
-
-### 등록하기
-
-- src/main.js
-- import router from './router'로 가져오기(알아서 index.js를 읽음)
-- app.use(router)로 라우터 등록
-
-### 사용하기
-
-- RouterLink to="..."으로 링크 생성
-- RouterView: Link와 일치하는 컴포넌트 배치
-
-### views 폴더
-
-- 페이지(화면) 단위의 최상위 컴포넌트
-- 구분
-  - views 폴더(큰 페이지 하나씩)
-    - 재사용성이 낮은 페이지(화면) 단위 컴포넌트
-    - RouterView에 직접 매핑(routes에 등록)
-    - URL Path와 1대1 대응
-    - RouterView에 의해 직접 호출되는 최상위 페이지 컴포넌트에는 접미사 'view' 붙이기
-  - component 폴더(페이지 안에 구성되는 요소들)
-    - 재사용성이 높은 UI/기능 컴포넌트
-    - RouterView에 직접 매핑 x
-
-## useRoute()
-
-- script setup 환경에서 현재 활성화된 라우트 정보에 접근하기 위한 Composable 함수
-- 프로퍼티
-  - params: 동적 경로 파라미터 객체 -> /user/:id => {id: '42'}
-  - query: URL 쿼리 스트링 객체 -> /search?q=vue => {q: 'vue'}
-  - path: 현재 요청된 URL의 순수 경로 -> /user/42
-  - name: 해당 라우트 설정에 지정된 고유 이름 -> UserDetail
-
-### 동적 경로 매칭
-
-- 주소창 뒤에 콜론(:)을 붙여 변수화(/weather/:cityId)함
-- 이 방식보다 쿼리 많이 씀
-
-### Query String Routing
-
-- 주소창 뒤에 물음표(?)에 이어 key=value 형태의 쌍으로 붙임
-  - /weather?search=수원&page=2
-
-## useRouter()
-
-- script setup 환경에서 라우터 인스턴스에 접근하기 위한 Composable 함수
-- 메소드
-  - push(): 스택에 추가(뒤로 가기 가능)
-  - replace(): 현재 히스토리 대체(뒤로 가기 불가)
-  - go(n): 스택에서 n단계만큼 이동, -1은 뒤로가기
-
-### Programmatic Navigation
-
-- script 내부에서 페이지를 전환
-- 메소드
-  - push()
-  - replace()
-  - go(n)
-  - back()
-  - forward()
-
-## Navigation Guard
-
-- 특정 라우트 진입 전, 접근 권한 검사 및 리다이렉션 실행하게 함
-  - 관리자 페이지나 마이 페이지를 비로그인 사용자 접근을 막음
-
-### Global Guard
-
-- 모든 Route 전환에서 사용자 정의 로직이 실행됨
-- beforeEach: 새로운 이동 시작되기 직전
-  - 접근 권한 통제 및 보안: 비로그인 사용자 차단
-- beforeResolve: 라우트 진입 전, 컴포넌트 분석 모두 완료된 직후 트리거
-  - 최종 데이터 검증 및 승인: 토큰, 데이터 확인
-- afterEach: 화면 전환이 끝난 후
-  - 후속 처리 및 로그 기록: 사용자 분석 로그 송신
-
-### Unmatched Route Handling
-
-- 라우트에 등록되지 않은 경로 예외 처리
-- path: '/:pathMatch(.\*)\*'로 선언
-
-## Pinia
-
-- 전역 데이터 저장소(Store)를 개설하여 반응형 데이터 관리
-- 소규모 상태나 간단한 데이터 전달은 provide/inject로 해결
-  - 테마, 언어, 특정 컴포넌트 영역 내부 전달용
-- 앱 전체에 복잡하게 얽히고 디버깅이 중요한 데이터는 Pinia(Store)로 관리
-  - 로그인 정보, 장바구니
-
-### Store
-
-- 여러 파일로 구성될 수 있으며, 일반적으로 의미가 있는 상태끼리 파일 하나로 작성
-  - authStore, uiStore, alertStore, commonStore 등
-- state: 반응형 데이터 변수
-  - 전역으로 공유할 상태 데이터 객체
-  - ref(), reactive()
-- getters: 읽기 전용 계산된 변수
-  - 원본 state를 기반으로 실시간 가공한다.
-  - computed()
-- actions: 상태 변경 및 통신 함수
-  - 1. state 값을 변경
-  - 1. 서버 비동기 API 통신(axios) 작업 수행
-  - function()
-  - 실무 권장 방식
-- 생성 시 식별자 이름은 'use+파일명+Store'로 작성
-- 구조분해할당 하면 반응형 꺠짐
-
-# day4
-
-## API 통신
-
-### HTTP
-
-- 웹 브라우저와 웹 서버가 인터넷상에서 데이터를 주고받기 위해 세계적으로 약속한 표준 통신 규약
-- 메서드(강제는 아님)
-  - GET: 읽기(Read)
-  - POST: 새로운 데이터 넣기(Create)
-  - PUT/PATCH: 수정(Update)
-  - DELETE: 삭제(Delete)
-- API
-  - 데이터를 주고 받는 약속
-- REST API
-  - HTTP 활용하면서, 자원을 이름으로 구분하여 데이터를 주고 받는 방식
-  - HTTP Method(GET, POST, DELETE, PUT)를 활용하여 CRUD 적용하는 것
-  - 주소(URL)는 오직 명사(자원)로만 구성한다
-    - X: /getWeather, /deleteUser
-    - O: /weather, /users
-
-### Axios
-
-- 비동기 통신 패키지
-- 실무에서 많이 사용
-
-## build
-
-- JS는 인터프리터 언어라, 실행 시에 오류가 발생하고 확인 가능
-
-### Lint
-
-- 소스 분석 도구: 문법적 오류, 잠재적 버그, 스타일 위반 등 경고해줌
-- 정적 분석: 코드 실행하지 않고 분석
-- ESLint, Oxlint
-
-### Code Formatter
-
-- 코드의 들여쓰기, 따롬표, 줄 바꿈, 세미콜론 등 스타일을 자동으로 맞춤
-- Prettier
+- `oxlint`(빠른 1차 린트) → `eslint-plugin-vue`(상세 규칙) 순차 실행
+- Prettier 별도 포맷팅
+- `@` 별칭을 `vite.config.js`/`jsconfig.json`에 동기화
+
+---
+
+## 사용 API
+
+모두 [OpenWeatherMap](https://openweathermap.org/api)에서 제공하는 API이며, `axios` 인스턴스로 호출 후 정규화 함수를 거쳐 화면에 전달됩니다.
+
+| API                   | 엔드포인트                | 용도                                          |
+| ---------------------- | -------------------------- | ---------------------------------------------- |
+| Current Weather        | `/data/2.5/weather`        | 카드/상세 화면의 현재 기온·습도·풍속·일출일몰 |
+| 5 Day / 3 Hour Forecast | `/data/2.5/forecast`       | 시간별(보간)·일별(5일) 예보                    |
+| Air Pollution          | `/data/2.5/air_pollution`  | 미세먼지·초미세먼지·이산화질소 등 대기질 지수 |
+| Geocoding (Direct)     | `/geo/1.0/direct`          | 도시명 검색 → 좌표 변환(지역 추가용)          |
+| Geocoding (Reverse)    | `/geo/1.0/reverse`         | 브라우저 좌표 → 지명 변환(내 위치용)          |
+
+---
+
+## 기술 스택과 선택 이유
+
+| 기술                        | 선택 이유                                                                                          |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Vue 3 Composition API**    | `ref`/`computed`/`watch` 단위로 로직을 응집시킬 수 있어, Options API보다 스토어·컴포넌트 간 로직 재사용이 쉬움 |
+| **Pinia**                    | Vuex 대비 보일러플레이트가 적고, `defineStore`의 setup 문법이 Composition API와 자연스럽게 연결됨. Devtools 연동으로 상태 추적이 쉬움 |
+| **VueUse**                   | `useStorage`(영속화), `useGeolocation`, `useDark`(다크모드) 등 브라우저 API를 반응형으로 감싸주어 직접 구현했을 때 생기는 중복 코드를 제거 |
+| **Vite**                     | ESM 기반 개발 서버로 빠른 HMR, 동적 import 기반 코드 스플리팅과 궁합이 좋음                          |
+| **ApexCharts**(`vue3-apexcharts`) | 애니메이션·툴팁이 기본 내장되어 있어 시간별/일별 예보 시각화를 적은 코드로 구현 가능                  |
+| **Leaflet**                  | 경량 오픈소스 지도 라이브러리로, OSM 타일을 무료로 사용해 별도 API 키나 비용 없이 다지역 비교 지도를 구현 |
+| **Axios**                    | 요청 인터셉터·`params` 직렬화 등 순수 `fetch` 대비 편의 기능 제공                                    |
+| **@lucide/vue**               | 트리셰이킹 가능한 SVG 아이콘 세트로 번들 크기 최소화                                                  |
+
+---
+
+## 폴더 구조
+
+```
+src/
+├── stores/                    # 도메인별 Pinia 스토어
+│   ├── weatherStore.js        # API 호출/정규화/캐시 (핵심 로직)
+│   ├── selectionStore.js      # 화면 간 공유되는 선택 지역
+│   ├── favoriteStore.js       # 즐겨찾기
+│   └── configStore.js         # 단위(온도/풍속) 설정
+├── views/                     # 라우트에 매핑되는 페이지 컴포넌트
+│   ├── WeatherHomeView.vue
+│   ├── WeatherDetailView.vue
+│   ├── WeatherRegionsView.vue
+│   ├── WeatherMapView.vue
+│   ├── WeatherStatsView.vue
+│   ├── WeatherAboutView.vue
+│   └── NotFoundView.vue
+├── components/weather/        # 재사용 UI 컴포넌트
+│   ├── CityCard.vue / WeatherIcon.vue / WeatherParticles.vue
+│   ├── HourlyForecastChart.vue / DailyForecastChart.vue
+│   ├── AirQualityCard.vue / DaylightBar.vue / DiscomfortCard.vue
+│   └── SearchBox.vue / FavoriteToggle.vue / AdviceChips.vue
+├── utils/
+│   ├── weatherMath.js         # 불쾌지수/단위 변환/설명 매핑 등 순수 함수
+│   └── weatherIconMap.js      # 아이콘 코드 → 테마/파티클 매핑
+├── router/index.js            # 지연 로딩 라우트 정의
+└── App.vue                    # 사이드바 셸 + 다크모드 + geolocation 부트스트랩
+```
+
+---
+
+## 로컬 실행
+
+```bash
+git clone https://github.com/<your-id>/skala-vue.git
+cd skala-vue
+npm install
+
+# .env 파일 생성 후 OpenWeatherMap API 키 입력
+echo "VITE_OPENWEATHER_API_KEY=your_api_key_here" > .env
+
+npm run dev       # 개발 서버 (http://localhost:5173)
+npm run build     # 프로덕션 빌드
+npm run preview   # 빌드 결과 미리보기
+npm run lint      # oxlint → eslint 순차 실행
+npm run format    # Prettier 포맷팅
+```
+
+---
+
+SK SKALA 4기 Vue 실습 과정에서 시작해, 개인 프로젝트로 발전시킨 날씨 대시보드입니다.
